@@ -15,10 +15,9 @@ export default function InitiateVerification() {
     const [formData, setFormData] = useState<FormData | null>(null);
     const [image, setImage] = useState<File | null>(null); // For storing the single image
     const [selectValued, setselectValued] = useState<string>("");
-    const [countries, setcountries] = useState([]);
+   
 
     const YearArray: number[] = [
-        1990,
         1991,
         1992,
         1993,
@@ -55,6 +54,7 @@ export default function InitiateVerification() {
         20224
     ]
 
+    const [countries, setcountries] = useState([]);
 
     useEffect(() => {
         axios.get("http://167.71.61.138:8000/common/countries/").then((response) => {
@@ -95,7 +95,6 @@ export default function InitiateVerification() {
         setModalOpen(true);
     };
     console.log(formData);
-
 
     return (
         <div>
