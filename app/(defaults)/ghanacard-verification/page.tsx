@@ -143,7 +143,7 @@ export default function InitiateVerification() {
                                 <input
                                     id="gridCity"
                                     type="text"
-                                    placeholder="Name of School"
+                                    placeholder="Enter NIA Number"
                                     className="form-input"
                                     value={verificationData.fullname}
                                     onChange={(e) => setVerificationData({ ...verificationData, fullname: e.target.value })}

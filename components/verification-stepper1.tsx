@@ -11,14 +11,21 @@ interface VerificationModalProps {
 
 export default function VerificationModal({ isOpen, closeModal, formData }: VerificationModalProps) {
     const [verificationData, setVerificationData] = useState<any>(null);
+    
 
     useEffect(() => {
         if (isOpen && formData) {
             const data = {
                 email: formData.get("email"),
                 phone: formData.get("phone"),
-                fullname: formData.get("fullname"),
-                submitted_image: formData.get("submitted_image"),
+                firstname: formData.get("firstname"),
+                lastname: formData.get("lastname"),
+                country: formData.get("country"),
+                document_type: formData.get("document_type"),
+                id_number: formData.get("id_number"),
+                image: formData.get("selfie"),
+                image2: formData.get("ghana_card_front"),
+                image3: formData.get("ghana_card_back"),
                 attendant: "michael amoo",
             };
             setVerificationData(data);
@@ -43,27 +50,38 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     const data = new FormData();
                     data.append("email", verificationData?.email || '');
                     data.append("phone", verificationData?.phone || '');
-                    data.append("fullname", verificationData?.fullname || '');
+                    data.append("firstname", verificationData?.firstname || '');
+                    data.append("lastname", verificationData?.lastname || '');
+                    data.append("country", verificationData?.country || '');
+                    data.append("document_type", verificationData?.document_type || '');
+                    data.append("id_number", verificationData?.id_number || '');
                     data.append("attendant", verificationData?.attendant || '');
-                    
-                    if (verificationData?.submitted_image) {
-                        data.append("submitted_image", verificationData?.submitted_image); // Append image file
+
+
+                    if (verificationData?.image) {
+                        data.append("selfie", verificationData?.image); // Append image file
+                    }
+                    if (verificationData?.image2) {
+                        data.append("ghana_card_front", verificationData?.image2); // Append image file
+                    }
+                    if (verificationData?.image3) {
+                        data.append("ghana_card_back", verificationData?.image3); // Append image file
                     }
 
                     // Make API call
-                    const url = `${process.env.NEXT_PUBLIC_BASE_VIDEOKYC_BACKEND_URL}/video-kyc/verify/client/`;
+                    const url = `https://mkd.collegeleagueapp.com/verifications/verify/id/`;
                     const response = await axios.post(url, data, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }
                     });
                     console.log(response.data);
-                    
 
-                    if (response.data.status === true) {
+
+                    if (response.data.verification_match === true) {
                         Swal.fire({
-                            title: 'Link Sent',
-                            text: response.data.message,
+                            title: 'National ID Verified',
+                            text: "National id verified Successfully!",
                             icon: 'success',
                             customClass: 'sweet-alerts'
                         });
@@ -75,7 +93,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                             customClass: 'sweet-alerts'
                         });
                     }
-                    
+
                 } catch (error) {
                     Swal.fire({
                         title: 'Error!',
@@ -116,17 +134,25 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                             leaveTo="opacity-0 scale-95"
                         >
                             <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-xl my-8 text-black dark:text-white-dark">
-                                <div className="flex py-2 bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-center">
+                                {/* <div className="flex py-2 bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-center">
                                     <span className="flex items-center justify-center w-16 h-16 rounded-full bg-[#f1f2f3] dark:bg-white/10">
                                         <svg>...</svg>
                                     </span>
-                                </div>
+                                </div> */}
                                 <div className="p-5">
                                     <div className="py-5 text-white-dark text-center">
                                         <p className='font-bold text-xl'>
                                             Confirm Verification Details.
                                         </p>
                                         <div className="mt-5 px-2">
+                                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
+                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">First Name</h6>
+                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.firstname}</h6>
+                                            </div>
+                                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
+                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Last Name</h6>
+                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.lastname}</h6>
+                                            </div>
                                             <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
                                                 <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Email</h6>
                                                 <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.email}</h6>
@@ -136,19 +162,47 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                                                 <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.phone}</h6>
                                             </div>
                                             <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Full Name</h6>
-                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.fullname}</h6>
+                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Country</h6>
+                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country}</h6>
                                             </div>
-                                            <div className="flex justify-center py-4">
-                                                {verificationData?.submitted_image ? (
-                                                    <img
-                                                        src={URL.createObjectURL(verificationData?.submitted_image as File)}
-                                                        alt="Uploaded"
-                                                        className="h-48 w-48 object-contain rounded-lg"
-                                                    />
-                                                ) : (
-                                                    <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
-                                                )}
+                                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
+                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Document Type</h6>
+                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country}</h6>
+                                            </div>
+                                            <div className=' grid grid-cols-1 lg:grid-cols-3 gap-5'>
+                                                <div className="flex justify-center py-4">
+                                                    {verificationData?.image ? (
+                                                        <img
+                                                            src={URL.createObjectURL(verificationData?.image as File)}
+                                                            alt="Uploaded"
+                                                            className="h-48 w-48 object-contain rounded-lg"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex justify-center py-4">
+                                                    {verificationData?.image2 ? (
+                                                        <img
+                                                            src={URL.createObjectURL(verificationData?.image2 as File)}
+                                                            alt="Uploaded"
+                                                            className="h-48 w-48 object-contain rounded-lg"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex justify-center py-4">
+                                                    {verificationData?.image3 ? (
+                                                        <img
+                                                            src={URL.createObjectURL(verificationData?.image3 as File)}
+                                                            alt="Uploaded"
+                                                            className="h-48 w-48 object-contain rounded-lg"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                         <button onClick={showVerificationConfirmAlert} type="button" className="btn btn-primary hover:bg-primary/80 text-white font-semibold w-full mt-5">
