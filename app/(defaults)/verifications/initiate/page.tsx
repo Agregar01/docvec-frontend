@@ -1,9 +1,11 @@
 "use client";
 import IconCamera from "@/components/icon/icon-camera";
 import VerificationModal from "@/components/verification-stepper1";
+import VerificationModal2 from "@/components/verification-stepper2";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import DropDownCards from "../../components/dropdowncard/page";
+
 
 
 interface Countries {
@@ -71,7 +73,7 @@ export default function InitiateVerification() {
     const [countries, setcountries] = useState([]);
 
     useEffect(() => {
-        axios.get("https://mkd.collegeleagueapp.com/common/countries/").then((response) => {
+        axios.get("https://verifications.agregartech.com/common/countries/").then((response) => {
             const data = response.data;
             console.log(data);
             setcountries(data);
@@ -148,7 +150,31 @@ export default function InitiateVerification() {
         setFormData(data);
         setModalOpen(true);
     };
-    console.log(formData);
+
+
+    const [isModalOpen2, setModalOpen2] = useState(false);
+    const [formData2, setFormData2] = useState<FormData | null>(null);
+
+    const [verificationData2, setVerificationData2] = useState({
+        email: "",
+        phone: "",
+        firstname: "",
+        lastname: "",
+        attendant: "admin"
+    });
+
+    const prepareFormData2 = () => {
+
+        const data = new FormData();
+        data.append("email", verificationData2.email);
+        data.append("phone", verificationData2.phone);
+        data.append("firstname", verificationData2.firstname);
+        data.append("lastname", verificationData2.lastname);
+        data.append("attendant", verificationData2.attendant);
+
+        setModalOpen2(true);
+        setFormData2(data);
+    }
 
     return (
         <div>
@@ -248,13 +274,13 @@ export default function InitiateVerification() {
                                                     onChange={(e) => setVerificationData({ ...verificationData, document_type: e.target.value })}
                                                 >
                                                     <option value="" disabled>Select document type</option>
-                                                     
+
                                                     {
-                                                      docTypes.map((list:IDType) => {
-                                                        return(
-                                                            <option value={list.id}>{list.name}</option>
-                                                        );
-                                                      })
+                                                        docTypes.map((list: IDType) => {
+                                                            return (
+                                                                <option value={list.id}>{list.name}</option>
+                                                            );
+                                                        })
                                                     }
                                                     {/* <option value="Ghana Card">Voters ID</option>
                                                     <option value="" disabled>Passpor</option>
@@ -340,8 +366,8 @@ export default function InitiateVerification() {
                                         type="email"
                                         placeholder="Enter Email"
                                         className="form-input"
-                                        value={verificationData.email}
-                                        onChange={(e) => setVerificationData({ ...verificationData, email: e.target.value })}
+                                        value={verificationData2.email}
+                                        onChange={(e) => setVerificationData2({ ...verificationData2, email: e.target.value })}
                                     />
                                 </div>
                                 <div className="mt-5">
@@ -351,8 +377,8 @@ export default function InitiateVerification() {
                                         type="text"
                                         placeholder="Enter Phone"
                                         className="form-input"
-                                        value={verificationData.phone}
-                                        onChange={(e) => setVerificationData({ ...verificationData, phone: e.target.value })}
+                                        value={verificationData2.phone}
+                                        onChange={(e) => setVerificationData2({ ...verificationData2, phone: e.target.value })}
                                     />
                                 </div>
                                 <div className=" grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
@@ -363,8 +389,8 @@ export default function InitiateVerification() {
                                             type="text"
                                             placeholder="Enter First Name"
                                             className="form-input"
-                                            value={verificationData.firstname}
-                                            onChange={(e) => setVerificationData({ ...verificationData, firstname: e.target.value })}
+                                            value={verificationData2.firstname}
+                                            onChange={(e) => setVerificationData2({ ...verificationData2, firstname: e.target.value })}
                                         />
                                     </div>
                                     <div className="">
@@ -374,15 +400,15 @@ export default function InitiateVerification() {
                                             type="text"
                                             placeholder="Enter First Name"
                                             className="form-input"
-                                            value={verificationData.firstname}
-                                            onChange={(e) => setVerificationData({ ...verificationData, firstname: e.target.value })}
+                                            value={verificationData2.lastname}
+                                            onChange={(e) => setVerificationData2({ ...verificationData2, lastname: e.target.value })}
                                         />
                                     </div>
                                 </div>
-                               
 
-                                <VerificationModal isOpen={isModalOpen} closeModal={() => setModalOpen(false)} formData={formData} />
-                                <button type="button" onClick={prepareFormData} className="btn btn-primary ltr:ml-auto rtl:mr-auto mt-10">
+
+                                <VerificationModal2 isOpen={isModalOpen2} closeModal={() => setModalOpen2(false)} formData={formData2} />
+                                <button type="button" onClick={prepareFormData2} className="btn btn-primary ltr:ml-auto rtl:mr-auto mt-10">
                                     Initiate Verification
                                 </button>
                             </div>
