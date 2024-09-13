@@ -36,7 +36,7 @@ const ComponentsAppsInvoicePreview = () => {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const url = `${process.env.NEXT_PUBLIC_BASE_VIDEOKYC_BACKEND_URL}/video-kyc/verifications/${reference}/`;
+                const url = `https://verifications.agregartech.com/api/v1/id-cards/verifications/${reference}/`;
                 const response = await axios.get(url);
                 setDetails(response.data);  // Assuming the response contains the data you need
             } catch (err: any) {

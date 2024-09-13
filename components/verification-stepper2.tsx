@@ -85,7 +85,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     data.append("attendant", verificationData?.attendant || '');
 
                     // Make API call
-                    const url = `https://verifications.agregartech.com/verifications/docvec/trigger-email/`;
+                    const url = `https://verifications.agregartech.com/api/v1/verifications/docvec/trigger-email/`;
                     const response = await axios.post(url, data, {
                         headers: {
                             'Content-Type': 'multipart/form-data'

@@ -11,7 +11,7 @@ interface VerificationModalProps {
 
 export default function VerificationModal({ isOpen, closeModal, formData }: VerificationModalProps) {
     const [verificationData, setVerificationData] = useState<any>(null);
-    
+
 
     useEffect(() => {
         if (isOpen && formData) {
@@ -69,7 +69,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     }
 
                     // Make API call
-                    const url = `https://mkd.collegeleagueapp.com/verifications/verify/id/`;
+                    const url = `https://verifications.agregartech.com/api/v1/verifications/verify/id/`;
                     const response = await axios.post(url, data, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
@@ -78,17 +78,28 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     console.log(response.data);
 
 
-                    if (response.data.verification_match === true) {
+                    if (response.data.is_valid_id.status === true && response.data.facial_match === true) {
                         Swal.fire({
                             title: 'National ID Verified',
-                            text: "National id verified Successfully!",
+                            text: "National id verification matched!",
                             icon: 'success',
                             customClass: 'sweet-alerts'
                         });
-                    } else {
+                    }
+
+                    else if (response.data.is_valid_id.status === true && response.data.facial_match === false) {
+                        Swal.fire({
+                            title: 'National ID Verified',
+                            text: "National id is valid, but facial match failed",
+                            icon: 'info',
+                            customClass: 'sweet-alerts'
+                        });
+                    }
+
+                    else {
                         Swal.fire({
                             title: 'Error!',
-                            text: response.data.message,
+                            text: "ID verification match not found. invalid ID",
                             icon: 'error',
                             customClass: 'sweet-alerts'
                         });

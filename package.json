@@ -7,7 +7,6 @@
         "build": "next build",
         "start": "next start -H 0.0.0.0 -p ${PORT:-8080}",
         "lint": "next lint"
-
     },
     "dependencies": {
         "@emotion/react": "^11.10.6",
@@ -22,6 +21,7 @@
         "@nextui-org/react": "^2.4.6",
         "@reduxjs/toolkit": "^1.9.1",
         "@tippyjs/react": "^4.2.6",
+        "@types/jsonwebtoken": "^9.0.6",
         "@types/node": "18.11.18",
         "@types/react": "18.0.27",
         "@types/react-dom": "18.0.10",

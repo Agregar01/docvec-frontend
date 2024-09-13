@@ -73,7 +73,7 @@ export default function InitiateVerification() {
     const [countries, setcountries] = useState([]);
 
     useEffect(() => {
-        axios.get("https://verifications.agregartech.com/common/countries/").then((response) => {
+        axios.get("https://verifications.agregartech.com/api/v1/common/countries/").then((response) => {
             const data = response.data;
             console.log(data);
             setcountries(data);
@@ -85,7 +85,7 @@ export default function InitiateVerification() {
     const [docTypes, setdocTypes] = useState([]);
 
     useEffect(() => {
-        axios.get("https://mkd.collegeleagueapp.com/common/document-type/").then((response) => {
+        axios.get("https://verifications.agregartech.com/api/v1/common/document-type/").then((response) => {
             const data = response.data;
             setdocTypes(data);
             console.log(data);
