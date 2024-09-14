@@ -9,23 +9,16 @@ interface VerificationModalProps {
     formData: FormData | null;
 }
 
-export default function VerificationModal({ isOpen, closeModal, formData }: VerificationModalProps) {
+export default function VerificationModal3({ isOpen, closeModal, formData }: VerificationModalProps) {
     const [verificationData, setVerificationData] = useState<any>(null);
-
 
     useEffect(() => {
         if (isOpen && formData) {
             const data = {
-                email: formData.get("email"),
-                phone: formData.get("phone"),
-                firstname: formData.get("firstname"),
-                lastname: formData.get("lastname"),
                 country: formData.get("country"),
                 document_type: formData.get("document_type"),
                 id_number: formData.get("id_number"),
-                image: formData.get("selfie"),
-                image2: formData.get("ghana_card_front"),
-                image3: formData.get("ghana_card_back"),
+                submitted_image: formData.get("submitted_image"),
                 attendant: "michael amoo",
             };
             setVerificationData(data);
@@ -50,26 +43,15 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     const data = new FormData();
                     data.append("email", verificationData?.email || '');
                     data.append("phone", verificationData?.phone || '');
-                    data.append("firstname", verificationData?.firstname || '');
-                    data.append("lastname", verificationData?.lastname || '');
-                    data.append("country", verificationData?.country || '');
-                    data.append("document_type", verificationData?.document_type || '');
-                    data.append("id_number", verificationData?.id_number || '');
+                    data.append("fullname", verificationData?.fullname || '');
                     data.append("attendant", verificationData?.attendant || '');
 
-
-                    if (verificationData?.image) {
-                        data.append("selfie", verificationData?.image); // Append image file
-                    }
-                    if (verificationData?.image2) {
-                        data.append("ghana_card_front", verificationData?.image2); // Append image file
-                    }
-                    if (verificationData?.image3) {
-                        data.append("ghana_card_back", verificationData?.image3); // Append image file
+                    if (verificationData?.submitted_image) {
+                        data.append("submitted_image", verificationData?.submitted_image); // Append image file
                     }
 
                     // Make API call
-                    const url = `https://verifications.agregartech.com/api/v1/verifications/verify/id/`;
+                    const url = `${process.env.NEXT_PUBLIC_BASE_VIDEOKYC_BACKEND_URL}/video-kyc/verify/client/`;
                     const response = await axios.post(url, data, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
@@ -78,28 +60,17 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     console.log(response.data);
 
 
-                    if (response.data.is_valid_id.status === true && response.data.facial_match === true) {
+                    if (response.data.status === true) {
                         Swal.fire({
-                            title: 'National ID Verified',
-                            text: "National id verification matched!",
+                            title: 'Link Sent',
+                            text: response.data.message,
                             icon: 'success',
                             customClass: 'sweet-alerts'
                         });
-                    }
-
-                    else if (response.data.is_valid_id.status === true && response.data.facial_match === false) {
-                        Swal.fire({
-                            title: 'National ID Verified',
-                            text: "National id is valid, but facial match failed",
-                            icon: 'info',
-                            customClass: 'sweet-alerts'
-                        });
-                    }
-
-                    else {
+                    } else {
                         Swal.fire({
                             title: 'Error!',
-                            text: "ID verification match not found. invalid ID",
+                            text: response.data.message,
                             icon: 'error',
                             customClass: 'sweet-alerts'
                         });
@@ -157,34 +128,14 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                                         </p>
                                         <div className="mt-5 px-2">
                                             <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">First Name</h6>
-                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.firstname}</h6>
-                                            </div>
-                                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Last Name</h6>
-                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.lastname}</h6>
-                                            </div>
-                                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Email</h6>
+                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">NIA Number</h6>
                                                 <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.email}</h6>
                                             </div>
-                                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Phone</h6>
-                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.phone}</h6>
-                                            </div>
-                                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Country</h6>
-                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country}</h6>
-                                            </div>
-                                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Document Type</h6>
-                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country}</h6>
-                                            </div>
-                                            <div className=' grid grid-cols-1 lg:grid-cols-3 gap-5'>
-                                                <div className="flex justify-center py-4">
-                                                    {verificationData?.image ? (
+                                            <div className=' grid grid-cols-2 gap-6 mt-5'>
+                                                <div>
+                                                    {verificationData?.submitted_image ? (
                                                         <img
-                                                            src={URL.createObjectURL(verificationData?.image as File)}
+                                                            src={URL.createObjectURL(verificationData?.submitted_image as File)}
                                                             alt="Uploaded"
                                                             className="h-48 w-48 object-contain rounded-lg"
                                                         />
@@ -192,10 +143,10 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                                                         <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
                                                     )}
                                                 </div>
-                                                <div className="flex justify-center py-4">
-                                                    {verificationData?.image2 ? (
+                                                <div>
+                                                    {verificationData?.submitted_image ? (
                                                         <img
-                                                            src={URL.createObjectURL(verificationData?.image2 as File)}
+                                                            src={URL.createObjectURL(verificationData?.submitted_image as File)}
                                                             alt="Uploaded"
                                                             className="h-48 w-48 object-contain rounded-lg"
                                                         />
@@ -203,17 +154,17 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                                                         <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
                                                     )}
                                                 </div>
-                                                <div className="flex justify-center py-4">
-                                                    {verificationData?.image3 ? (
-                                                        <img
-                                                            src={URL.createObjectURL(verificationData?.image3 as File)}
-                                                            alt="Uploaded"
-                                                            className="h-48 w-48 object-contain rounded-lg"
-                                                        />
-                                                    ) : (
-                                                        <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
-                                                    )}
-                                                </div>
+                                            </div>
+                                            <div className="flex justify-center py-4">
+                                                {verificationData?.submitted_image ? (
+                                                    <img
+                                                        src={URL.createObjectURL(verificationData?.submitted_image as File)}
+                                                        alt="Uploaded"
+                                                        className="h-48 w-48 object-contain rounded-full"
+                                                    />
+                                                ) : (
+                                                    <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
+                                                )}
                                             </div>
                                         </div>
                                         <button onClick={showVerificationConfirmAlert} type="button" className="btn btn-primary hover:bg-primary/80 text-white font-semibold w-full mt-5">

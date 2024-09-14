@@ -61,7 +61,7 @@ const ComponentsDatatablesAdvanced = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/video-kyc/verifications/statistics/");
+        const response = await axios.get("https://verifications.agregartech.com/api/v1/id-cards/verifications/statistics");
         setStats(response.data);
       } catch (err: any) {
         setError(err.message);
@@ -75,7 +75,7 @@ const ComponentsDatatablesAdvanced = () => {
   useEffect(() => {
     const verificationData = async () => {
       try {
-        const verifications = await axios.get("http://127.0.0.1:8000/video-kyc/verifications/");
+        const verifications = await axios.get("https://verifications.agregartech.com/api/v1/id-cards/verifications");
         setRowData(verifications.data);
       } catch (err: any) {
         setError(err.message);
