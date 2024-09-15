@@ -33,6 +33,9 @@ export default function InitiateVerification() {
 
 
 
+
+
+
     const YearArray: number[] = [
         1991,
         1992,
@@ -126,6 +129,8 @@ export default function InitiateVerification() {
 
     const prepareFormData = () => {
         const data = new FormData();
+       
+
         data.append("email", verificationData.email);
         data.append("phone", verificationData.phone);
         data.append("firstname", verificationData.firstname);
@@ -133,8 +138,7 @@ export default function InitiateVerification() {
         data.append("country", verificationData.country);
         data.append("document_type", verificationData.document_type);
         data.append("id_number", verificationData.id_number);
-
-
+       
         if (image) {
             data.append("selfie", image); // Append the single image file
         }
@@ -200,6 +204,7 @@ export default function InitiateVerification() {
                                         <div>
                                             <label htmlFor="gridEmail">First Name</label>
                                             <input
+                                                required
                                                 id="gridEmail"
                                                 type="email"
                                                 placeholder="Enter First Name"
@@ -211,6 +216,7 @@ export default function InitiateVerification() {
                                         <div >
                                             <label htmlFor="gridEmail">Last Name</label>
                                             <input
+                                                required
                                                 id="gridEmail"
                                                 type="email"
                                                 placeholder="Enter Last Name"
@@ -225,6 +231,7 @@ export default function InitiateVerification() {
                                         <div className="mt-5">
                                             <label htmlFor="gridEmail">Email</label>
                                             <input
+                                                required
                                                 id="gridEmail"
                                                 type="email"
                                                 placeholder="Enter Email"
@@ -236,6 +243,7 @@ export default function InitiateVerification() {
                                         <div className="mt-5">
                                             <label htmlFor="gridEmail">Phone</label>
                                             <input
+                                                required
                                                 id="gridEmail"
                                                 type="email"
                                                 placeholder="Enter Phone"
@@ -247,6 +255,7 @@ export default function InitiateVerification() {
                                         <div className="mt-5">
                                             <label htmlFor="gridCity">Select Country</label>
                                             <select
+                                                required
                                                 name='classIntructor'
                                                 id="role-select"
                                                 className="form-input cursor-pointer"
@@ -267,6 +276,7 @@ export default function InitiateVerification() {
                                             <div className="">
                                                 <label htmlFor="gridCity">Select ID Type</label>
                                                 <select
+                                                    required
                                                     name='classIntructor'
                                                     id="role-select"
                                                     className="form-input cursor-pointer"
@@ -290,6 +300,7 @@ export default function InitiateVerification() {
                                             <div>
                                                 <label htmlFor="gridEmail">ID Number</label>
                                                 <input
+                                                    required
                                                     id="gridEmail"
                                                     type="email"
                                                     placeholder="Enter Email"
@@ -304,6 +315,7 @@ export default function InitiateVerification() {
                                             <div className="">
                                                 <label htmlFor="ctnFile">Upload passport picture</label>
                                                 <input
+
                                                     id="imageUpload"
                                                     type="file"
                                                     className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"

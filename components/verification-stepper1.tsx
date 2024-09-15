@@ -12,6 +12,17 @@ interface VerificationModalProps {
 export default function VerificationModal({ isOpen, closeModal, formData }: VerificationModalProps) {
     const [verificationData, setVerificationData] = useState<any>(null);
 
+    const [businessData, setBusinessData] = useState<{ name: string, email: string, business: string, phone: string, address: string, country: string } | null>(null);
+
+    useEffect(() => {
+        // Get and parse businessData from localStorage
+        const storedData = localStorage.getItem('businessData');
+        if (storedData) {
+            setBusinessData(JSON.parse(storedData));
+        }
+    }, []);
+
+
 
     useEffect(() => {
         if (isOpen && formData) {
@@ -27,12 +38,23 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                 image2: formData.get("ghana_card_front"),
                 image3: formData.get("ghana_card_back"),
                 attendant: "michael amoo",
+
             };
             setVerificationData(data);
         }
     }, [isOpen, formData]);
 
     const showVerificationConfirmAlert = async () => {
+
+        const initiator = {
+            name: businessData?.name,
+            phone: businessData?.phone,
+            email: businessData?.email,
+            country: businessData?.country,
+            address: businessData?.address,
+            business: businessData?.business,
+        }
+
         Swal.fire({
             icon: 'warning',
             title: 'Confirm to proceed',
@@ -56,6 +78,9 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     data.append("document_type", verificationData?.document_type || '');
                     data.append("id_number", verificationData?.id_number || '');
                     data.append("attendant", verificationData?.attendant || '');
+                    data.append("initiator", JSON.stringify(initiator));
+
+
 
 
                     if (verificationData?.image) {
@@ -69,7 +94,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     }
 
                     // Make API call
-                    const url = `https://verifications.agregartech.com/api/v1/verifications/verify/id/`;
+                    const url = `https://verifications.agregartech.com/api/v1/id-cards/complete-verification/business/`;
                     const response = await axios.post(url, data, {
                         headers: {
                             'Content-Type': 'multipart/form-data'

@@ -49,6 +49,18 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
     const [verificationData, setVerificationData] = useState<any>(null);
 
 
+    const [businessData, setBusinessData] = useState<{ name: string, email: string, business: string, phone: string, address: string, country: string } | null>(null);
+
+    useEffect(() => {
+        // Get and parse businessData from localStorage
+        const storedData = localStorage.getItem('businessData');
+        if (storedData) {
+            setBusinessData(JSON.parse(storedData));
+        }
+    }, []);
+
+
+
     useEffect(() => {
         if (isOpen && formData) {
             const data = {
@@ -63,6 +75,15 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
     }, [isOpen, formData]);
 
     const showVerificationConfirmAlert = async () => {
+        const initiator = {
+            name: businessData?.name,
+            phone: businessData?.phone,
+            email: businessData?.email,
+            country: businessData?.country,
+            address: businessData?.address,
+            business: businessData?.business,
+        }
+
         Swal.fire({
             icon: 'warning',
             title: 'Confirm to proceed',
@@ -82,10 +103,10 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     data.append("phone", verificationData?.phone || '');
                     data.append("firstname", verificationData?.firstname || '');
                     data.append("lastname", verificationData?.lastname || '');
-                    data.append("attendant", verificationData?.attendant || '');
+                    data.append("initiator", JSON.stringify(initiator));
 
                     // Make API call
-                    const url = `https://verifications.agregartech.com/api/v1/verifications/docvec/trigger-email/`;
+                    const url = `https://verifications.agregartech.com/api/v1/id-cards/trigger-email/`;
                     const response = await axios.post(url, data, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
@@ -94,17 +115,26 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     console.log(response.data);
 
 
-                    if (response.data.verification_match === true) {
+                    if (response.data.status === true) {
                         Swal.fire({
-                            title: 'National ID Verified',
-                            text: "National id verified Successfully!",
+                            title: 'verification Email',
+                            text: response.data.message,
                             icon: 'success',
                             customClass: 'sweet-alerts'
                         });
-                    } else {
+                    }
+                   else if (response.data.status === false) {
+                        Swal.fire({
+                            title: 'verification Email',
+                            text: response.data.message,
+                            icon: 'info',
+                            customClass: 'sweet-alerts'
+                        });
+                    }
+                     else {
                         Swal.fire({
                             title: 'Error!',
-                            text: response.data.message,
+                            text: "Sending verificaton email failed!!!",
                             icon: 'error',
                             customClass: 'sweet-alerts'
                         });

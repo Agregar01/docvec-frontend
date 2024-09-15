@@ -18,8 +18,11 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                 country: formData.get("country"),
                 document_type: formData.get("document_type"),
                 id_number: formData.get("id_number"),
-                submitted_image: formData.get("submitted_image"),
-                attendant: "michael amoo",
+                imageSrc: formData.get("selfie"),
+                image2: formData.get("ghana_card_front"),
+                image3: formData.get("ghana_card_back"),
+                id: formData.get("id")
+                // attendant: "michael amoo",
             };
             setVerificationData(data);
         }
@@ -41,17 +44,24 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                 try {
                     // Create FormData for API call
                     const data = new FormData();
-                    data.append("email", verificationData?.email || '');
-                    data.append("phone", verificationData?.phone || '');
-                    data.append("fullname", verificationData?.fullname || '');
-                    data.append("attendant", verificationData?.attendant || '');
+                    data.append("country", verificationData?.country || '');
+                    data.append("document_type", verificationData?.document_type || '');
+                    data.append("id_number", verificationData?.id_number || '');
+                    data.append("id", verificationData?.id || '');
 
-                    if (verificationData?.submitted_image) {
-                        data.append("submitted_image", verificationData?.submitted_image); // Append image file
+                    if (verificationData?.imageSrc) {
+                        data.append("selfie", verificationData?.imageSrc); // Append image file
+                    }
+                    if (verificationData?.image2) {
+                        data.append("ghana_card_front", verificationData?.image2); // Append image file
+                    }
+                    if (verificationData?.image3) {
+                        data.append("ghana_card_back", verificationData?.image3); // Append image file
                     }
 
+
                     // Make API call
-                    const url = `${process.env.NEXT_PUBLIC_BASE_VIDEOKYC_BACKEND_URL}/video-kyc/verify/client/`;
+                    const url = `https://verifications.agregartech.com/api/v1/id-cards/complete-verification/candidate/`;
                     const response = await axios.post(url, data, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
@@ -128,44 +138,43 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                                         </p>
                                         <div className="mt-5 px-2">
                                             <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">NIA Number</h6>
-                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.email}</h6>
+                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Country</h6>
+                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country}</h6>
+                                            </div>
+                                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
+                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">National ID type</h6>
+                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.document_type}</h6>
+                                            </div>
+                                            <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
+                                                <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">National ID number</h6>
+                                                <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.id_number}</h6>
                                             </div>
                                             <div className=' grid grid-cols-2 gap-6 mt-5'>
-                                                <div>
-                                                    {verificationData?.submitted_image ? (
-                                                        <img
-                                                            src={URL.createObjectURL(verificationData?.submitted_image as File)}
-                                                            alt="Uploaded"
-                                                            className="h-48 w-48 object-contain rounded-lg"
-                                                        />
-                                                    ) : (
-                                                        <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
-                                                    )}
-                                                </div>
-                                                <div>
-                                                    {verificationData?.submitted_image ? (
-                                                        <img
-                                                            src={URL.createObjectURL(verificationData?.submitted_image as File)}
-                                                            alt="Uploaded"
-                                                            className="h-48 w-48 object-contain rounded-lg"
-                                                        />
-                                                    ) : (
-                                                        <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
-                                                    )}
-                                                </div>
-                                            </div>
                                             <div className="flex justify-center py-4">
-                                                {verificationData?.submitted_image ? (
+                                                {verificationData?.image3 ? (
                                                     <img
-                                                        src={URL.createObjectURL(verificationData?.submitted_image as File)}
+                                                        src={URL.createObjectURL(verificationData?.image3 as File)}
                                                         alt="Uploaded"
-                                                        className="h-48 w-48 object-contain rounded-full"
+                                                        className="h-48 w-48 object-contain"
                                                     />
                                                 ) : (
                                                     <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
                                                 )}
                                             </div>
+
+                                                <div>
+                                                    {verificationData?.image2 ? (
+                                                        <img
+                                                            src={URL.createObjectURL(verificationData?.image2 as File)}
+                                                            alt="Uploaded"
+                                                            className="h-48 w-48 object-contain rounded-lg"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            
                                         </div>
                                         <button onClick={showVerificationConfirmAlert} type="button" className="btn btn-primary hover:bg-primary/80 text-white font-semibold w-full mt-5">
                                             Proceed

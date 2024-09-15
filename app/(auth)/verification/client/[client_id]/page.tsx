@@ -28,13 +28,16 @@ interface IDType {
 
 export default function VerifyPhoto() {
 
+  const { client_id } = useParams<{ client_id: string }>();
+
   const [countries, setcountries] = useState([]);
-  const [image, setImage] = useState<File | null>(null);
+  const [image2, setimage2] = useState<File | null>(null);
+  const [image3, setimage3] = useState<File | null>(null);
   const [formData, setFormData] = useState<FormData | null>(null);
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    axios.get("https://mkd.collegeleagueapp.com/common/countries/").then((response) => {
+    axios.get("https://verifications.agregartech.com/api/v1/common/countries/").then((response) => {
       const data = response.data;
       console.log(data);
       setcountries(data);
@@ -47,7 +50,7 @@ export default function VerifyPhoto() {
   const [docTypes, setdocTypes] = useState([]);
 
   useEffect(() => {
-    axios.get("https://mkd.collegeleagueapp.com/common/document-type/").then((response) => {
+    axios.get("https://verifications.agregartech.com/api/v1/common/document-type/").then((response) => {
       const data = response.data;
       setdocTypes(data);
       console.log(data);
@@ -55,10 +58,15 @@ export default function VerifyPhoto() {
 
   }, []);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange2 = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null; // Get the first selected file or null
-    setImage(file);
+    setimage2(file);
   };
+  const handleImageChange3 = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null; // Get the first selected file or null
+    setimage3(file);
+  };
+
 
   const webcamRef = useRef<Webcam>(null);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -82,14 +90,17 @@ export default function VerifyPhoto() {
     data.append("country", verificationData.country);
     data.append("document_type", verificationData.document_type);
     data.append("id_number", verificationData.id_number);
-
-
-    if (image) {
-      data.append("selfie", image); // Append the single image file
+    data.append("id", client_id);
+    if (imageSrc) {
+      data.append("selfie", imageSrc);
+    }
+    if (image2) {
+      data.append("ghana_card_front", image2);
     }
 
-
-    axios.post("")
+    if (image3) {
+      data.append("ghana_card_back", image3);
+    }
 
     setFormData(data);
     setModalOpen(true);
@@ -212,25 +223,38 @@ export default function VerifyPhoto() {
                       <input
                         id="gridEmail"
                         type="email"
-                        placeholder="Enter Email"
+                        placeholder="Enter ID Number"
                         className="form-input"
                         value={verificationData.id_number}
                         onChange={(e) => setVerificationData({ ...verificationData, id_number: e.target.value })}
                       />
                     </div>
                   </div>
-                  <div className=" mt-5">
-                    <label htmlFor="ctnFile">Upload ID Document</label>
-                    <input
-                      id="imageUpload"
-                      type="file"
-                      className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
-                      required
-                      onChange={handleImageChange}
-                      accept="image/*"
-                    />
+                  <div className=" mt-5 grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div>
+                      <label htmlFor="ctnFile">Upload front of card</label>
+                      <input
+                        id="imageUpload"
+                        type="file"
+                        className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
+                        required
+                        onChange={handleImageChange2}
+                        accept="image/*"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="ctnFile">Upload back of card</label>
+                      <input
+                        id="imageUpload"
+                        type="file"
+                        className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
+                        required
+                        onChange={handleImageChange3}
+                        accept="image/*"
+                      />
+                    </div>
                   </div>
-                  <button type="button" className="btn btn-primary ltr:ml-auto rtl:mr-auto mt-6">
+                  <button onClick={prepareFormData} type="button" className="btn btn-primary ltr:ml-auto rtl:mr-auto mt-6">
                     Initiate Verification
                   </button>
                 </div>
