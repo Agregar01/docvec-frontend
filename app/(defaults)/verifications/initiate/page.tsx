@@ -8,6 +8,7 @@ import DropDownCards from "../../components/dropdowncard/page";
 
 
 
+
 interface Countries {
     id: string,
     name: string,
@@ -29,6 +30,7 @@ export default function InitiateVerification() {
     const [selectValued, setselectValued] = useState<string>("");
     const [showForm1, setshowForm1] = useState<boolean>(false);
     const [showForm2, setshowForm2] = useState<boolean>(false);
+
 
 
 
@@ -107,7 +109,8 @@ export default function InitiateVerification() {
         country: "",
         idType: "",
         id_number: "",
-        document_type: ""
+        document_type: "",
+        countryname: ""
     });
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,7 +132,7 @@ export default function InitiateVerification() {
 
     const prepareFormData = () => {
         const data = new FormData();
-       
+
 
         data.append("email", verificationData.email);
         data.append("phone", verificationData.phone);
@@ -138,7 +141,7 @@ export default function InitiateVerification() {
         data.append("country", verificationData.country);
         data.append("document_type", verificationData.document_type);
         data.append("id_number", verificationData.id_number);
-       
+
         if (image) {
             data.append("selfie", image); // Append the single image file
         }
@@ -182,6 +185,7 @@ export default function InitiateVerification() {
 
     return (
         <div>
+
             <div className="panel flex items-center overflow-x-auto whitespace-nowrap p-3 text-primary mb-5 bg-blue-100">
                 <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
                     <IconCamera />
@@ -245,7 +249,7 @@ export default function InitiateVerification() {
                                             <input
                                                 required
                                                 id="gridEmail"
-                                                type="email"
+                                                type="number"
                                                 placeholder="Enter Phone"
                                                 className="form-input"
                                                 value={verificationData.phone}
@@ -292,9 +296,6 @@ export default function InitiateVerification() {
                                                             );
                                                         })
                                                     }
-                                                    {/* <option value="Ghana Card">Voters ID</option>
-                                                    <option value="" disabled>Passpor</option>
-                                                    <option value="Ghana Card">Drivers Licesnce</option> */}
                                                 </select>
                                             </div>
                                             <div>

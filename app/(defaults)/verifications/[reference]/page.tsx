@@ -12,16 +12,27 @@ import Image from 'next/image';
 
 interface VerificationDetails {
     phone?: string;
+    country: string;
     reference?: string;
     created_at?: string;
     verification_status?: string;
     link_sent?: string;
     verification_completed_time?: string;
-    verification_completed?: string;
+    verification_completed?: boolean;
     longitude?: string;
     latitude?: string;
     firstname: string;
     lastname: string;
+    id_number: string;
+    document_type: string;
+    valid_card: boolean;
+    facial_match: boolean;
+    initiator: {
+        name: string;
+        email: string;
+        phone: string;
+        address: string;
+    }
 }
 
 const ComponentsAppsInvoicePreview = () => {
@@ -100,19 +111,19 @@ const ComponentsAppsInvoicePreview = () => {
                 <div className="flex justify-between">
                     <div className="space-y-1 text-white-dark grid-cols-1/2">
                         <div>Verified For:</div>
-                        <div className="font-semibold text-black dark:text-white">Fidelity Bank, Ghana</div>
-                        <div>Tetteh Quarshie Head Office, Accra - Ghana</div>
-                        <div>info@fidelitybankghana.com</div>
-                        <div>(+233) 030 320 999</div>
+                        <div className="font-semibold text-black dark:text-white">{details?.initiator?.name}</div>
+                        <div>{details?.initiator?.address}</div>
+                        <div>{details?.initiator?.email}</div>
+                        <div>{details?.initiator?.phone}</div>
                     </div>
                     <div className="flex flex-col sm:flex-row justify-end">
                         <div className="">
                             <div className="mb-2 flex w-full items-center justify-between">
-                                <div className="text-white-dark">Client Name:</div>
+                                <div className="text-white-dark">Candidate Name:</div>
                                 <div className="whitespace-nowrap">{details?.firstname} {details?.lastname}</div>
                             </div>
                             <div className="mb-2 flex w-full items-center justify-between">
-                                <div className="text-white-dark">Client Phone:</div>
+                                <div className="text-white-dark">Candidate Phone:</div>
                                 <div>{details?.phone}</div>
                             </div>
                             <div className="mb-2 flex w-full items-center justify-between">
@@ -124,8 +135,8 @@ const ComponentsAppsInvoicePreview = () => {
                                 <div>{formatDate(details?.created_at)}</div>
                             </div>
                             <div className="mb-2 flex w-full items-center justify-between">
-                                <div className="text-white-dark">Staff Name</div>
-                                <div>Michael Amoo</div>
+                                <div className="text-white-dark">Initiator Name</div>
+                                <div>{details?.initiator?.name}</div>
                             </div>
                         </div>
                     </div>
@@ -137,57 +148,48 @@ const ComponentsAppsInvoicePreview = () => {
                     <div>
                         <h5 className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">Verification Details</h5>
                         <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Verification Status</div>
+                            <div className="text-white-dark">Verification Status: </div>
                             <div className="whitespace-nowrap">{details?.verification_status}</div>
                         </div>
                         <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Verification Link Sent</div>
+                            <div className="text-white-dark">Verification Link Sent: </div>
                             <div className="whitespace-nowrap">{details?.link_sent}</div>
                         </div>
                         <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Time of completion</div>
+                            <div className="text-white-dark">Time of completion: </div>
                             <div className="whitespace-nowrap">{details?.verification_completed_time}</div>
                         </div>
                         <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Verification Completed</div>
-                            <div className="whitespace-nowrap">{details?.verification_completed}</div>
+                            <div className="text-white-dark">Verification Completed: </div>
+                            <div className="whitespace-nowrap">{details?.verification_completed === true ? "COMPLETED" : "NOT COMPLETED"}</div>
+                        </div>
+
+                        <div className="mb-2 flex w-full justify-between">
+                            <div className="text-white-dark">Facial Match: </div>
+                            <div className="whitespace-nowrap">{details?.facial_match === true ? "TRUE" : "FALSE"}</div>
                         </div>
                         <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Location Coordinates</div>
-                            <div className="whitespace-nowrap">{details?.longitude}, {details?.latitude}</div>
-                        </div>
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Liveliness</div>
-                            <div className="whitespace-nowrap">{details?.longitude}, {details?.latitude}</div>
+                            <div className="text-white-dark">Is Valid ID:</div>
+                            <div className="whitespace-nowrap">{details?.valid_card === true ? "TRUE" : "FALSE"}</div>
                         </div>
                     </div>
 
                     <div>
                         <h5 className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">Verification Details</h5>
+
                         <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Verification Status</div>
-                            <div className="whitespace-nowrap">{details?.verification_status}</div>
+                            <div className="text-white-dark">Country:</div>
+                            <div className="whitespace-nowrap">{details?.country}</div>
                         </div>
                         <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Verification Link Sent</div>
-                            <div className="whitespace-nowrap">{details?.link_sent}</div>
+                            <div className="text-white-dark">Document Type: </div>
+                            <div className="whitespace-nowrap">{details?.document_type}</div>
                         </div>
                         <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Time of completion</div>
-                            <div className="whitespace-nowrap">{details?.verification_completed_time}</div>
+                            <div className="text-white-dark">ID Number: </div>
+                            <div className="whitespace-nowrap">{details?.id_number}</div>
                         </div>
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Verification Completed</div>
-                            <div className="whitespace-nowrap">{details?.verification_completed}</div>
-                        </div>
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Location Coordinates</div>
-                            <div className="whitespace-nowrap">{details?.longitude}, {details?.latitude}</div>
-                        </div>
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Liveliness</div>
-                            <div className="whitespace-nowrap">{details?.longitude}, {details?.latitude}</div>
-                        </div>
+
                     </div>
                 </div>
                 <hr className="my-6 border-orange-600 dark:border-[#1b2e4b]" />

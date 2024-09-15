@@ -255,8 +255,8 @@ const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) ===
                   ),
                 },
                 {
-                  accessor: 'staff',
-                  title: 'Staff',
+                  accessor: 'initiator',
+                  title: 'initiator',
                   sortable: true,
                   render: ({ firstname, lastname }) => (
                     <div className="flex items-center gap-2">
