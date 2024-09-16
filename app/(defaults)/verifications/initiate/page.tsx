@@ -8,6 +8,7 @@ import DropDownCards from "../../components/dropdowncard/page";
 
 
 
+
 interface Countries {
     id: string,
     name: string,
@@ -29,6 +30,10 @@ export default function InitiateVerification() {
     const [selectValued, setselectValued] = useState<string>("");
     const [showForm1, setshowForm1] = useState<boolean>(false);
     const [showForm2, setshowForm2] = useState<boolean>(false);
+
+
+
+
 
 
 
@@ -104,7 +109,8 @@ export default function InitiateVerification() {
         country: "",
         idType: "",
         id_number: "",
-        document_type: ""
+        document_type: "",
+        countryname: ""
     });
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,6 +132,8 @@ export default function InitiateVerification() {
 
     const prepareFormData = () => {
         const data = new FormData();
+
+
         data.append("email", verificationData.email);
         data.append("phone", verificationData.phone);
         data.append("firstname", verificationData.firstname);
@@ -133,7 +141,6 @@ export default function InitiateVerification() {
         data.append("country", verificationData.country);
         data.append("document_type", verificationData.document_type);
         data.append("id_number", verificationData.id_number);
-
 
         if (image) {
             data.append("selfie", image); // Append the single image file
@@ -178,6 +185,7 @@ export default function InitiateVerification() {
 
     return (
         <div>
+
             <div className="panel flex items-center overflow-x-auto whitespace-nowrap p-3 text-primary mb-5 bg-blue-100">
                 <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
                     <IconCamera />
@@ -200,6 +208,7 @@ export default function InitiateVerification() {
                                         <div>
                                             <label htmlFor="gridEmail">First Name</label>
                                             <input
+                                                required
                                                 id="gridEmail"
                                                 type="email"
                                                 placeholder="Enter First Name"
@@ -211,6 +220,7 @@ export default function InitiateVerification() {
                                         <div >
                                             <label htmlFor="gridEmail">Last Name</label>
                                             <input
+                                                required
                                                 id="gridEmail"
                                                 type="email"
                                                 placeholder="Enter Last Name"
@@ -225,6 +235,7 @@ export default function InitiateVerification() {
                                         <div className="mt-5">
                                             <label htmlFor="gridEmail">Email</label>
                                             <input
+                                                required
                                                 id="gridEmail"
                                                 type="email"
                                                 placeholder="Enter Email"
@@ -236,8 +247,9 @@ export default function InitiateVerification() {
                                         <div className="mt-5">
                                             <label htmlFor="gridEmail">Phone</label>
                                             <input
+                                                required
                                                 id="gridEmail"
-                                                type="email"
+                                                type="number"
                                                 placeholder="Enter Phone"
                                                 className="form-input"
                                                 value={verificationData.phone}
@@ -247,6 +259,7 @@ export default function InitiateVerification() {
                                         <div className="mt-5">
                                             <label htmlFor="gridCity">Select Country</label>
                                             <select
+                                                required
                                                 name='classIntructor'
                                                 id="role-select"
                                                 className="form-input cursor-pointer"
@@ -267,6 +280,7 @@ export default function InitiateVerification() {
                                             <div className="">
                                                 <label htmlFor="gridCity">Select ID Type</label>
                                                 <select
+                                                    required
                                                     name='classIntructor'
                                                     id="role-select"
                                                     className="form-input cursor-pointer"
@@ -282,14 +296,12 @@ export default function InitiateVerification() {
                                                             );
                                                         })
                                                     }
-                                                    {/* <option value="Ghana Card">Voters ID</option>
-                                                    <option value="" disabled>Passpor</option>
-                                                    <option value="Ghana Card">Drivers Licesnce</option> */}
                                                 </select>
                                             </div>
                                             <div>
                                                 <label htmlFor="gridEmail">ID Number</label>
                                                 <input
+                                                    required
                                                     id="gridEmail"
                                                     type="email"
                                                     placeholder="Enter Email"
@@ -304,6 +316,7 @@ export default function InitiateVerification() {
                                             <div className="">
                                                 <label htmlFor="ctnFile">Upload passport picture</label>
                                                 <input
+
                                                     id="imageUpload"
                                                     type="file"
                                                     className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"

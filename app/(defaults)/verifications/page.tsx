@@ -313,8 +313,8 @@ const ComponentsDatatablesAdvanced = () => {
                   ),
                 },
                 {
-                  accessor: 'staff',
-                  title: 'Staff',
+                  accessor: 'initiator',
+                  title: 'Initiator',
                   sortable: true,
                   render: ({ firstname, lastname }) => (
                     <div className="flex items-center gap-2">
