@@ -1,12 +1,11 @@
 import React from 'react';
-import "../../components/Loader/loader.css";
 
 
 interface props {
     open?: boolean;
 }
 
-const page: React.FC<props> = ({ open }) => {
+const VerificationLoader: React.FC<props> = ({ open }) => {
 
     if (!open) return null;
     return (
@@ -16,7 +15,7 @@ const page: React.FC<props> = ({ open }) => {
                     <div className=' grid place-items-center mb-8'>
                         <span className="loader"></span>
                     </div>
-                    <h1 className=' text-center text-lg text-[#4361EE]'>Loading please wait....</h1>
+                    <h1 className=' text-center text-lg text-[#4361EE]'>Verifying, just a moment....</h1>
                 </div>
 
             </div>
@@ -24,4 +23,4 @@ const page: React.FC<props> = ({ open }) => {
     )
 }
 
-export default page
+export default VerificationLoader

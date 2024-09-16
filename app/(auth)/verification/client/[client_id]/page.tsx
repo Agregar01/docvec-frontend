@@ -30,32 +30,54 @@ export default function VerifyPhoto() {
 
   const { client_id } = useParams<{ client_id: string }>();
 
-  const [countries, setcountries] = useState([]);
+  // const [countries, setcountries] = useState([]);
   const [image2, setimage2] = useState<File | null>(null);
   const [image3, setimage3] = useState<File | null>(null);
   const [formData, setFormData] = useState<FormData | null>(null);
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [countries, setCountries] = useState<Countries[]>([]);
+  const [idType, setIDType] = useState<IDType[]>([]);
+
+  // useEffect(() => {
+  //   axios.get("https://verifications.agregartech.com/api/v1/common/countries/").then((response) => {
+  //     const data = response.data;
+  //     console.log(data);
+  //     setcountries(data);
+  //   }).catch((err) => {
+  //     console.log(err);
+  //   })
+  // }, []);
+
+
+  // const [docTypes, setdocTypes] = useState([]);
+
+  // useEffect(() => {
+  //   axios.get("https://verifications.agregartech.com/api/v1/common/document-type/").then((response) => {
+  //     const data = response.data;
+  //     setdocTypes(data);
+  //     console.log(data);
+  //   })
+
+  // }, []);
 
   useEffect(() => {
-    axios.get("https://verifications.agregartech.com/api/v1/common/countries/").then((response) => {
-      const data = response.data;
-      console.log(data);
-      setcountries(data);
-    }).catch((err) => {
-      console.log(err);
-    })
+    const countryList: Countries[] = [
+      { id: 'bbad08e7-1e6e-4b40-9536-7cdc49b844c8', name: 'Ghana', code: 'GH' },
+      { id: '65a225a3-aba4-407f-bd3c-deec9a8e20d3', name: 'Nigeria', code: 'NG' },
+      { id: 'b0022c65-b8d3-468e-b1a4-fefed31ae919', name: 'Ivory Coast', code: 'CI' },
+    ];
+
+    setCountries(countryList); // Set the countries array in the state
   }, []);
 
+useEffect(() => {
+    const idTypeList: IDType[] = [
+      { id: '4c28f31f-22fd-41ed-a5d4-758b50813f21', name: 'National ID', code: 'GH' },
+      { id: '7d68dd38-7ee8-4521-9d47-caad5c280a6c', name: 'Drivers License', code: 'NG' },
+      { id: '5d0f04cd-2d8a-41dd-a8b3-94f742575b82', name: 'Voters ID', code: 'CI' },
+    ];
 
-  const [docTypes, setdocTypes] = useState([]);
-
-  useEffect(() => {
-    axios.get("https://verifications.agregartech.com/api/v1/common/document-type/").then((response) => {
-      const data = response.data;
-      setdocTypes(data);
-      console.log(data);
-    })
-
+    setIDType(idTypeList); // Set the countries array in the state
   }, []);
 
   const handleImageChange2 = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +153,7 @@ export default function VerifyPhoto() {
                 </div>
                 <div className="text-justify mx-auto max-w-4xl px-4 text-sm">
                   <p className="text-3xl font-bold text-center mb-2">
-                    Customer Verification Application
+                    ID and Document Verification
                   </p>
                   <p className="">
                     Before submitting the photo, here are a few checklists to follow:
@@ -178,45 +200,42 @@ export default function VerifyPhoto() {
                   <div className="mt-5">
                     <label htmlFor="gridCity">Select Country</label>
                     <select
+                      required
                       name='classIntructor'
                       id="role-select"
                       className="form-input cursor-pointer"
                       value={verificationData.country}
                       onChange={(e) => setVerificationData({ ...verificationData, country: e.target.value })}
-                    >
+                  >
                       <option value="" disabled>Select Country</option>
-                      {
-                        countries.map((list: Countries) => {
-                          return (
-                            <option value={list.id}>{list.name}</option>
-                          );
-                        })
-                      }
-                    </select>
+                      {countries.map((list: Countries) => (
+                      <option key={list.id} value={list.id}>
+                          {list.name}
+                      </option>
+                      ))}
+                  </select>
                   </div>
                   <div className=" grid lg:grid-cols-2 gap-6 grid-cols-1 mt-5">
                     <div className="">
                       <label htmlFor="gridCity">Select ID Type</label>
                       <select
+                        required
                         name='classIntructor'
                         id="role-select"
                         className="form-input cursor-pointer"
                         value={verificationData.document_type}
                         onChange={(e) => setVerificationData({ ...verificationData, document_type: e.target.value })}
-                      >
-                        <option value="" disabled>Select document type</option>
-
-                        {
-                          docTypes.map((list: IDType) => {
-                            return (
-                              <option value={list.id}>{list.name}</option>
-                            );
-                          })
-                        }
+                    >
+                        <option value="" disabled>Select ID Type</option>
+                        {idType.map((list: IDType) => (
+                        <option key={list.id} value={list.id}>
+                            {list.name}
+                        </option>
+                        ))}
+                    </select>
                         {/* <option value="Ghana Card">Voters ID</option>
                                                     <option value="" disabled>Passpor</option>
                                                     <option value="Ghana Card">Drivers Licesnce</option> */}
-                      </select>
                     </div>
                     <div>
                       <label htmlFor="gridEmail">ID Number</label>

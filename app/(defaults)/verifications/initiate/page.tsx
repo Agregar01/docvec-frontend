@@ -1,12 +1,10 @@
 "use client";
+import DropDownCard from "@/components/dropdown-verifications";
 import IconCamera from "@/components/icon/icon-camera";
 import VerificationModal from "@/components/verification-stepper1";
 import VerificationModal2 from "@/components/verification-stepper2";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import DropDownCards from "../../components/dropdowncard/page";
-
-
 
 
 interface Countries {
@@ -26,80 +24,53 @@ export default function InitiateVerification() {
     const [image, setImage] = useState<File | null>(null);
     const [image2, setimage2] = useState<File | null>(null);
     const [image3, setimage3] = useState<File | null>(null);
-    // For storing the single image
-    const [selectValued, setselectValued] = useState<string>("");
     const [showForm1, setshowForm1] = useState<boolean>(false);
     const [showForm2, setshowForm2] = useState<boolean>(false);
+    // const [countries, setCountries] = useState([]);
+    const [countries, setCountries] = useState<Countries[]>([]);
+    const [idType, setIDType] = useState<IDType[]>([]);
+    
 
+    // useEffect(() => {
+    //     axios.get("https://verifications.agregartech.com/api/v1/common/countries/").then((response) => {
+    //         const data = response.data;
+    //         console.log(data);
+    //         setCountries(data);
+    //     }).catch((err) => {
+    //         console.log(err);
+    //     })
+    // }, []);
 
+    // const [docTypes, setdocTypes] = useState([]);
 
+    // useEffect(() => {
+    //     axios.get("https://verifications.agregartech.com/api/v1/common/document-type/").then((response) => {
+    //         const data = response.data;
+    //         setdocTypes(data);
+    //         console.log(data);
+    //     })
 
-
-
-
-
-    const YearArray: number[] = [
-        1991,
-        1992,
-        1993,
-        1994,
-        1995,
-        1996,
-        1997,
-        1998,
-        1999,
-        2000,
-        2001,
-        2002,
-        2003,
-        2004,
-        2005,
-        2006,
-        2007,
-        2008,
-        2009,
-        2010,
-        2011,
-        2012,
-        2013,
-        2014,
-        2015,
-        2016,
-        2017,
-        2018,
-        2019,
-        2020,
-        2021,
-        2022,
-        2023,
-        20224
-    ]
-
-    const [countries, setcountries] = useState([]);
+    // }, [])
 
     useEffect(() => {
-        axios.get("https://verifications.agregartech.com/api/v1/common/countries/").then((response) => {
-            const data = response.data;
-            console.log(data);
-            setcountries(data);
-        }).catch((err) => {
-            console.log(err);
-        })
-    }, []);
-
-    const [docTypes, setdocTypes] = useState([]);
+        const countryList: Countries[] = [
+          { id: 'bbad08e7-1e6e-4b40-9536-7cdc49b844c8', name: 'Ghana', code: 'GH' },
+          { id: '65a225a3-aba4-407f-bd3c-deec9a8e20d3', name: 'Nigeria', code: 'NG' },
+          { id: 'b0022c65-b8d3-468e-b1a4-fefed31ae919', name: 'Ivory Coast', code: 'CI' },
+        ];
+    
+        setCountries(countryList); // Set the countries array in the state
+      }, []);
 
     useEffect(() => {
-        axios.get("https://verifications.agregartech.com/api/v1/common/document-type/").then((response) => {
-            const data = response.data;
-            setdocTypes(data);
-            console.log(data);
-        })
-
-    }, [])
-
-
-
+        const idTypeList: IDType[] = [
+          { id: '4c28f31f-22fd-41ed-a5d4-758b50813f21', name: 'National ID', code: 'GH' },
+          { id: '7d68dd38-7ee8-4521-9d47-caad5c280a6c', name: 'Drivers License', code: 'NG' },
+          { id: '5d0f04cd-2d8a-41dd-a8b3-94f742575b82', name: 'Voters ID', code: 'CI' },
+        ];
+    
+        setIDType(idTypeList); // Set the countries array in the state
+      }, []);
 
     const [verificationData, setVerificationData] = useState({
         email: "",
@@ -128,11 +99,8 @@ export default function InitiateVerification() {
         setimage3(file);
     }
 
-
-
     const prepareFormData = () => {
         const data = new FormData();
-
 
         data.append("email", verificationData.email);
         data.append("phone", verificationData.phone);
@@ -157,7 +125,6 @@ export default function InitiateVerification() {
         setFormData(data);
         setModalOpen(true);
     };
-
 
     const [isModalOpen2, setModalOpen2] = useState(false);
     const [formData2, setFormData2] = useState<FormData | null>(null);
@@ -193,7 +160,7 @@ export default function InitiateVerification() {
                 <span className="ltr:mr-3 rtl:ml-3 text-xl text-primary">DOCUMENTS VERIFICATION</span>
             </div>
             <div className=" space-y-4">
-                <DropDownCards open={!showForm1} handleClick={() => {
+                <DropDownCard open={!showForm1} handleClick={() => {
                     setshowForm1(!showForm1);
                 }} />
                 {showForm1 ?
@@ -267,13 +234,11 @@ export default function InitiateVerification() {
                                                 onChange={(e) => setVerificationData({ ...verificationData, country: e.target.value })}
                                             >
                                                 <option value="" disabled>Select Country</option>
-                                                {
-                                                    countries.map((list: Countries) => {
-                                                        return (
-                                                            <option value={list.id}>{list.name}</option>
-                                                        );
-                                                    })
-                                                }
+                                                {countries.map((list: Countries) => (
+                                                <option key={list.id} value={list.id}>
+                                                    {list.name}
+                                                </option>
+                                                ))}
                                             </select>
                                         </div>
                                         <div className=" grid lg:grid-cols-2 gap-6 grid-cols-1 mt-5">
@@ -287,15 +252,12 @@ export default function InitiateVerification() {
                                                     value={verificationData.document_type}
                                                     onChange={(e) => setVerificationData({ ...verificationData, document_type: e.target.value })}
                                                 >
-                                                    <option value="" disabled>Select document type</option>
-
-                                                    {
-                                                        docTypes.map((list: IDType) => {
-                                                            return (
-                                                                <option value={list.id}>{list.name}</option>
-                                                            );
-                                                        })
-                                                    }
+                                                    <option value="" disabled>Select ID Type</option>
+                                                    {idType.map((list: IDType) => (
+                                                    <option key={list.id} value={list.id}>
+                                                        {list.name}
+                                                    </option>
+                                                    ))}
                                                 </select>
                                             </div>
                                             <div>
@@ -303,8 +265,8 @@ export default function InitiateVerification() {
                                                 <input
                                                     required
                                                     id="gridEmail"
-                                                    type="email"
-                                                    placeholder="Enter Email"
+                                                    type="text"
+                                                    placeholder="Enter ID Number"
                                                     className="form-input"
                                                     value={verificationData.id_number}
                                                     onChange={(e) => setVerificationData({ ...verificationData, id_number: e.target.value })}
@@ -362,7 +324,7 @@ export default function InitiateVerification() {
                         </div>
                     </div>
                     : null}
-                <DropDownCards open={!showForm2} handleClick={() => {
+                <DropDownCard open={!showForm2} handleClick={() => {
                     setshowForm2(!showForm2);
                 }} />
             </div>

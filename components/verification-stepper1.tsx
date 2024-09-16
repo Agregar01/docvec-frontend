@@ -2,7 +2,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import WaitingLoader from "../app/(defaults)/components/Loader/page";
+import VerificationLoader from './verification-loader';
 
 interface VerificationModalProps {
     isOpen: boolean;
@@ -108,7 +108,9 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     setshowWaitingLoader(false);
 
 
-                    if (response.data.is_valid_id.status === true && response.data.facial_match === true) {
+                    if (Boolean(response.data.is_valid_id.status) === true && Boolean(response.data.facial_match) === true) {
+                        console.log("nnnnnn");
+                        
                         Swal.fire({
                             title: 'National ID Verified',
                             text: "National id verification matched!",
@@ -152,7 +154,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
 
     return (
         <>
-            <WaitingLoader open={showWaitingLoader} />
+            <VerificationLoader open={showWaitingLoader} />
 
             <Transition appear show={isOpen} as={Fragment}>
                 <Dialog as="div" open={isOpen} onClose={closeModal}>
@@ -208,11 +210,11 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                                                 </div>
                                                 <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
                                                     <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Country</h6>
-                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country}</h6>
+                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country.name}</h6>
                                                 </div>
                                                 <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
                                                     <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Document Type</h6>
-                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country}</h6>
+                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country.name}</h6>
                                                 </div>
                                                 <div className=' grid grid-cols-1 lg:grid-cols-3 gap-5'>
                                                     <div className="flex justify-center py-4">

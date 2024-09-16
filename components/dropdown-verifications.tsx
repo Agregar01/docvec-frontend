@@ -3,10 +3,9 @@ import React from 'react';
 interface Props {
     open?: boolean;
     handleClick?: () => void,
-
 }
 
-const page: React.FC<Props> = ({ open = true, handleClick }) => {
+const DropDownCard: React.FC<Props> = ({ open = true, handleClick }) => {
     return (
         <div className=' bg-white rounded-[5px] shadow-sm border border-[#dddddd] flex items-center justify-between   py-3 px-4'>
             <div className=' flex items-center space-x-3'>
@@ -39,4 +38,4 @@ const page: React.FC<Props> = ({ open = true, handleClick }) => {
     )
 }
 
-export default page
+export default DropDownCard

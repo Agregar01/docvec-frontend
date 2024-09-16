@@ -38,7 +38,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import WaitingLoader from "../app/(defaults)/components/Loader/page";
+import VerificationLoader from './verification-loader';
 
 interface VerificationModalProps {
     isOpen: boolean;
@@ -162,7 +162,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
 
     return (
         <>
-          <WaitingLoader open={showWaitingLoader} />
+          <VerificationLoader open={showWaitingLoader} />
             <Transition appear show={isOpen} as={Fragment}>
                 <Dialog as="div" open={isOpen} onClose={closeModal}>
                     <Transition.Child
