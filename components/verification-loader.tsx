@@ -1,4 +1,5 @@
 import React from 'react';
+import "../components/verification-loader.css";
 
 
 interface props {
@@ -15,7 +16,7 @@ const VerificationLoader: React.FC<props> = ({ open }) => {
                     <div className=' grid place-items-center mb-8'>
                         <span className="loader"></span>
                     </div>
-                    <h1 className=' text-center text-lg text-[#4361EE]'>Verifying, just a moment....</h1>
+                    <h1 className=' text-center text-lg text-[#4361EE]'>Submitting, just a moment....</h1>
                 </div>
 
             </div>

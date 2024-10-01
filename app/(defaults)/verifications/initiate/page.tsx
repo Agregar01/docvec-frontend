@@ -29,7 +29,7 @@ export default function InitiateVerification() {
     // const [countries, setCountries] = useState([]);
     const [countries, setCountries] = useState<Countries[]>([]);
     const [idType, setIDType] = useState<IDType[]>([]);
-    
+
 
     // useEffect(() => {
     //     axios.get("https://verifications.agregartech.com/api/v1/common/countries/").then((response) => {
@@ -54,23 +54,23 @@ export default function InitiateVerification() {
 
     useEffect(() => {
         const countryList: Countries[] = [
-          { id: 'bbad08e7-1e6e-4b40-9536-7cdc49b844c8', name: 'Ghana', code: 'GH' },
-          { id: '65a225a3-aba4-407f-bd3c-deec9a8e20d3', name: 'Nigeria', code: 'NG' },
-          { id: 'b0022c65-b8d3-468e-b1a4-fefed31ae919', name: 'Ivory Coast', code: 'CI' },
+            { id: 'bbad08e7-1e6e-4b40-9536-7cdc49b844c8', name: 'Ghana', code: 'GH' },
+            { id: '65a225a3-aba4-407f-bd3c-deec9a8e20d3', name: 'Nigeria', code: 'NG' },
+            { id: 'b0022c65-b8d3-468e-b1a4-fefed31ae919', name: 'Ivory Coast', code: 'CI' },
         ];
-    
+
         setCountries(countryList); // Set the countries array in the state
-      }, []);
+    }, []);
 
     useEffect(() => {
         const idTypeList: IDType[] = [
-          { id: '4c28f31f-22fd-41ed-a5d4-758b50813f21', name: 'National ID', code: 'GH' },
-          { id: '7d68dd38-7ee8-4521-9d47-caad5c280a6c', name: 'Drivers License', code: 'NG' },
-          { id: '5d0f04cd-2d8a-41dd-a8b3-94f742575b82', name: 'Voters ID', code: 'CI' },
+            { id: '4c28f31f-22fd-41ed-a5d4-758b50813f21', name: 'National ID', code: 'GH' },
+            { id: '7d68dd38-7ee8-4521-9d47-caad5c280a6c', name: 'Drivers License', code: 'NG' },
+            { id: '5d0f04cd-2d8a-41dd-a8b3-94f742575b82', name: 'Voters ID', code: 'CI' },
         ];
-    
+
         setIDType(idTypeList); // Set the countries array in the state
-      }, []);
+    }, []);
 
     const [verificationData, setVerificationData] = useState({
         email: "",
@@ -159,7 +159,7 @@ export default function InitiateVerification() {
                 </div>
                 <span className="ltr:mr-3 rtl:ml-3 text-xl text-primary">DOCUMENTS VERIFICATION</span>
             </div>
-            <div className=" space-y-4">
+            {/* <div className=" space-y-4">
                 <DropDownCard open={!showForm1} handleClick={() => {
                     setshowForm1(!showForm1);
                 }} />
@@ -327,71 +327,71 @@ export default function InitiateVerification() {
                 <DropDownCard open={!showForm2} handleClick={() => {
                     setshowForm2(!showForm2);
                 }} />
-            </div>
-            {showForm2 ?
-                <div className="mb-5 flex items-center justify-center  mt-5">
-                    <div className="w-full bg-white shadow-[4px_6px_10px_-3px_#bfc9d4] rounded-xl border border-white-light dark:border-[#1b2e4b] dark:bg-[#191e3a] dark:shadow-none p-5">
-                        <div className="space-y-5 mt-5">
-                            <div className="mx-10 ">
-                                <div className="text-center text-xl mb-10">Kindly provide the details below to facilitate verification</div>
-                                <div>
-                                    <label htmlFor="gridEmail">Email</label>
-                                    <input
-                                        id="gridEmail"
-                                        type="email"
-                                        placeholder="Enter Email"
-                                        className="form-input"
-                                        value={verificationData2.email}
-                                        onChange={(e) => setVerificationData2({ ...verificationData2, email: e.target.value })}
-                                    />
-                                </div>
-                                <div className="mt-5">
-                                    <label htmlFor="phone">Phone</label>
-                                    <input
-                                        id="phone"
-                                        type="text"
-                                        placeholder="Enter Phone"
-                                        className="form-input"
-                                        value={verificationData2.phone}
-                                        onChange={(e) => setVerificationData2({ ...verificationData2, phone: e.target.value })}
-                                    />
-                                </div>
-                                <div className=" grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
-                                    <div className="">
-                                        <label htmlFor="gridCity">First Name</label>
-                                        <input
-                                            id="gridCity"
-                                            type="text"
-                                            placeholder="Enter First Name"
-                                            className="form-input"
-                                            value={verificationData2.firstname}
-                                            onChange={(e) => setVerificationData2({ ...verificationData2, firstname: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="">
-                                        <label htmlFor="gridCity">Last Name</label>
-                                        <input
-                                            id="gridCity"
-                                            type="text"
-                                            placeholder="Enter First Name"
-                                            className="form-input"
-                                            value={verificationData2.lastname}
-                                            onChange={(e) => setVerificationData2({ ...verificationData2, lastname: e.target.value })}
-                                        />
-                                    </div>
-                                </div>
-
-
-                                <VerificationModal2 isOpen={isModalOpen2} closeModal={() => setModalOpen2(false)} formData={formData2} />
-                                <button type="button" onClick={prepareFormData2} className="btn btn-primary ltr:ml-auto rtl:mr-auto mt-10">
-                                    Initiate Verification
-                                </button>
+            </div> */}
+            {/* {showForm2 ? */}
+            <div className="mb-5 flex items-center justify-center  mt-5">
+                <div className="w-full bg-white shadow-[4px_6px_10px_-3px_#bfc9d4] rounded-xl border border-white-light dark:border-[#1b2e4b] dark:bg-[#191e3a] dark:shadow-none p-5">
+                    <div className="space-y-5 mt-5">
+                        <div className="mx-10 ">
+                            <div className="text-center text-xl mb-10">Kindly provide the details below to facilitate verification</div>
+                            <div>
+                                <label htmlFor="gridEmail">Email <span className=" text-red-600">*</span></label>
+                                <input
+                                    id="gridEmail"
+                                    type="email"
+                                    placeholder="Enter Email"
+                                    className="form-input"
+                                    value={verificationData2.email}
+                                    onChange={(e) => setVerificationData2({ ...verificationData2, email: e.target.value })}
+                                />
                             </div>
+                            <div className="mt-5">
+                                <label htmlFor="phone">Phone <span className=" text-red-600">*</span></label>
+                                <input
+                                    id="phone"
+                                    type="text"
+                                    placeholder="Enter Phone"
+                                    className="form-input"
+                                    value={verificationData2.phone}
+                                    onChange={(e) => setVerificationData2({ ...verificationData2, phone: e.target.value })}
+                                />
+                            </div>
+                            <div className=" grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
+                                <div className="">
+                                    <label htmlFor="gridCity">First Name <span className=" text-red-600">*</span></label>
+                                    <input
+                                        id="gridCity"
+                                        type="text"
+                                        placeholder="Enter First Name"
+                                        className="form-input"
+                                        value={verificationData2.firstname}
+                                        onChange={(e) => setVerificationData2({ ...verificationData2, firstname: e.target.value })}
+                                    />
+                                </div>
+                                <div className="">
+                                    <label htmlFor="gridCity">Last Name <span className=" text-red-600">*</span></label>
+                                    <input
+                                        id="gridCity"
+                                        type="text"
+                                        placeholder="Enter First Name"
+                                        className="form-input"
+                                        value={verificationData2.lastname}
+                                        onChange={(e) => setVerificationData2({ ...verificationData2, lastname: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+
+                            <VerificationModal2 isOpen={isModalOpen2} closeModal={() => setModalOpen2(false)} formData={formData2} />
+                            <button type="button" onClick={prepareFormData2} className="btn btn-primary ltr:ml-auto rtl:mr-auto mt-10">
+                                Initiate Verification
+                            </button>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                : null}
+            {/* : null} */}
         </div>
     );
 }

@@ -74,14 +74,16 @@ const ComponentsAppsInvoicePreview = () => {
         return '';
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div className=' grid place-items-center my-28'>
+        <span className="loader"></span>
+    </div>;
     if (error) return <div>Error: {error}</div>;
 
     return (
         <div className="mx-[50px]">
             <div className="mb-6 flex flex-wrap items-center justify-center gap-4 lg:justify-end">
                 <button type="button" className="btn btn-primary gap-2" onClick={() => exportTable()}>
-                    <IconPrinter />
+                    <IconPrinter /> 
                     Print
                 </button>
                 <button type="button" className="btn btn-success gap-2">
