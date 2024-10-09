@@ -40,6 +40,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                 image2: formData.get("ghana_card_front"),
                 image3: formData.get("ghana_card_back"),
                 attendant: "michael amoo",
+              
 
             };
             setVerificationData(data);
@@ -83,6 +84,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     data.append("id_number", verificationData?.id_number || '');
                     data.append("attendant", verificationData?.attendant || '');
                     data.append("initiator", JSON.stringify(initiator));
+                   
 
 
 
@@ -110,7 +112,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
 
                     if (Boolean(response.data.is_valid_id.status) === true && Boolean(response.data.facial_match) === true) {
                         console.log("nnnnnn");
-                        
+
                         Swal.fire({
                             title: 'National ID Verified',
                             text: "National id verification matched!",

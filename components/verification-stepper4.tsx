@@ -3,6 +3,7 @@ import { Fragment, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import VerificationLoader from './verification-loader';
+import { useRouter } from 'next/navigation';
 
 interface VerificationModalProps {
     isOpen: boolean;
@@ -13,6 +14,7 @@ interface VerificationModalProps {
 export default function VerificationModal3({ isOpen, closeModal, formData }: VerificationModalProps) {
     const [verificationData, setVerificationData] = useState<any>(null);
     const [showWaitingLoader, setshowWaitingLoader] = useState<boolean>(false);
+    const router = useRouter();
 
     useEffect(() => {
         if (isOpen && formData) {
@@ -23,7 +25,9 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                 imageSrc: formData.get("selfie"),
                 image2: formData.get("ghana_card_front"),
                 image3: formData.get("ghana_card_back"),
-                id: formData.get("id")
+                id: formData.get("id"),
+                countryname: formData.get("countryname"),
+                documentname: formData.get("documentname")
                 // attendant: "michael amoo",
             };
             setVerificationData(data);
@@ -89,7 +93,11 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                             title: 'Link Sent',
                             text: response.data.message,
                             icon: 'success',
-                            customClass: 'sweet-alerts'
+                            customClass: 'sweet-alerts',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                router.push("https://www.empverify.com/");
+                            }
                         });
                     } else {
                         Swal.fire({
@@ -155,11 +163,11 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                                             <div className="mt-5 px-2">
                                                 <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
                                                     <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Country</h6>
-                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country}</h6>
+                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.countryname}</h6>
                                                 </div>
                                                 <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
                                                     <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">National ID type</h6>
-                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.document_type}</h6>
+                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.documentname}</h6>
                                                 </div>
                                                 <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
                                                     <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">National ID number</h6>

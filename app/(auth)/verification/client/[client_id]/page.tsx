@@ -105,6 +105,8 @@ useEffect(() => {
     country: "",
     document_type: "",
     id_number: "",
+    countryname: "",
+    documentname:""
   });
 
   const prepareFormData = () => {
@@ -113,6 +115,8 @@ useEffect(() => {
     data.append("document_type", verificationData.document_type);
     data.append("id_number", verificationData.id_number);
     data.append("id", client_id);
+    data.append("documentname",verificationData.documentname);
+    data.append("countryname",verificationData.countryname);
     if (imageSrc) {
       data.append("selfie", imageSrc);
     }
@@ -198,18 +202,26 @@ useEffect(() => {
                 </div>
                 <div>
                   <div className="mt-5">
-                    <label htmlFor="gridCity">Select Country</label>
+                    <label htmlFor="gridCity">Select Country <span className=" text-red-600">*</span></label>
                     <select
                       required
                       name='classIntructor'
                       id="role-select"
                       className="form-input cursor-pointer"
                       value={verificationData.country}
-                      onChange={(e) => setVerificationData({ ...verificationData, country: e.target.value })}
+                      // onChange={(e) => setVerificationData({ ...verificationData, country: e.target.value })}
+                      onChange={(e) => {
+                        const selectedOption = e.target.options[e.target.selectedIndex];
+                        setVerificationData({
+                            ...verificationData,
+                            country: selectedOption.value, // id for country
+                            countryname: selectedOption.getAttribute('data-country') || "", // name for country
+                        });
+                    }}
                   >
                       <option value="" disabled>Select Country</option>
                       {countries.map((list: Countries) => (
-                      <option key={list.id} value={list.id}>
+                      <option key={list.id} value={list.id} data-country={list.name}>
                           {list.name}
                       </option>
                       ))}
@@ -217,18 +229,27 @@ useEffect(() => {
                   </div>
                   <div className=" grid lg:grid-cols-2 gap-6 grid-cols-1 mt-5">
                     <div className="">
-                      <label htmlFor="gridCity">Select ID Type</label>
+                      <label htmlFor="gridCity">Select ID Type <span className=" text-red-600">*</span></label>
                       <select
                         required
                         name='classIntructor'
                         id="role-select"
                         className="form-input cursor-pointer"
                         value={verificationData.document_type}
-                        onChange={(e) => setVerificationData({ ...verificationData, document_type: e.target.value })}
+                        onChange={(e) => {
+                          const selectedOption = e.target.options[e.target.selectedIndex];
+                          setVerificationData({
+                              ...verificationData,
+                              document_type: e.target.value, // id for document_type
+                              // country: selectedOption.value, // id for country
+                              documentname: selectedOption.getAttribute('data-document') || "", // name for country
+                          });
+                      }}
+                        // onChange={(e) => setVerificationData({ ...verificationData, document_type: e.target.value })}
                     >
                         <option value="" disabled>Select ID Type</option>
                         {idType.map((list: IDType) => (
-                        <option key={list.id} value={list.id}>
+                        <option key={list.id} value={list.id} data-document={list.name}>
                             {list.name}
                         </option>
                         ))}
@@ -238,7 +259,7 @@ useEffect(() => {
                                                     <option value="Ghana Card">Drivers Licesnce</option> */}
                     </div>
                     <div>
-                      <label htmlFor="gridEmail">ID Number</label>
+                      <label htmlFor="gridEmail">ID Number <span className=" text-red-600">*</span></label>
                       <input
                         id="gridEmail"
                         type="email"
@@ -251,7 +272,7 @@ useEffect(() => {
                   </div>
                   <div className=" mt-5 grid grid-cols-1 lg:grid-cols-2 gap-5">
                     <div>
-                      <label htmlFor="ctnFile">Upload front of card</label>
+                      <label htmlFor="ctnFile">Upload front of card <span className=" text-red-600">*</span></label>
                       <input
                         id="imageUpload"
                         type="file"
@@ -262,7 +283,7 @@ useEffect(() => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="ctnFile">Upload back of card</label>
+                      <label htmlFor="ctnFile">Upload back of card <span className=" text-red-600">*</span></label>
                       <input
                         id="imageUpload"
                         type="file"

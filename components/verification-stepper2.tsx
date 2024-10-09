@@ -126,6 +126,10 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                             text: response.data.message,
                             icon: 'success',
                             customClass: 'sweet-alerts'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                setVerificationData(null);
+                            }
                         });
                     }
                     else if (response.data.status === false) {
