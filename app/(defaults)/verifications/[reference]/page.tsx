@@ -49,6 +49,8 @@ interface VerificationDetails {
         submitted_image: string;
         consent_sorted: boolean;
         type: string;
+        id_card_front: string
+        id_card_back: string
     },
     device_information: {
         ip: string;
@@ -130,20 +132,33 @@ const ComponentsAppsInvoicePreview = () => {
 
                 <hr className="my-6 border-orange-600 dark:border-[#1b2e4b] mx-10" />
 
-                <div className="flex justify-between px-10">
-                    <div className="space-y-1 text-white-dark grid-cols-1/2">
-                        <div className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">Client Images:</div>
+                <div className="flex justify-between px-10 gap-10">
+                    <div className="space-y-1 text-white-dark grid-cols-1/3">
+                        <div className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">Candidate Images:</div>
                         <div className="flex flex-row gap-10">
+
                             <div className="div flex flex-col items-center">
-                                {details?.verification_records?.submitted_image && (
+                                <div className="p mb-2">ID Card Front</div>
+                                {details?.verification_records?.id_card_front && (
                                 <img
-                                    src={details.verification_records.submitted_image}
-                                    alt="Submitted Image"
+                                    src={details.verification_records.id_card_front}
+                                    alt="ID Card Front"
                                     className="w-40 h-40 object-cover" // Set a fixed width and height with Tailwind CSS
                                 />
                                 )}
                             </div>
                             <div className="div flex flex-col items-center">
+                                <div className="p mb-2">ID card Back</div>
+                                {details?.verification_records?.id_card_back && (
+                                <img
+                                    src={details.verification_records.id_card_back}
+                                    alt="ID Card Back"
+                                    className="w-40 h-40 object-cover" // Set a fixed width and height with Tailwind CSS
+                                />
+                                )}
+                            </div>
+                            <div className="div flex flex-col items-center">
+                                <div className="p mb-2">Video Image</div>
                                 {details?.verification_records?.video_image && (
                                 <img
                                     src={details.verification_records.video_image}
