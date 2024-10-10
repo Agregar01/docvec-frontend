@@ -89,10 +89,10 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                     setshowWaitingLoader(false);
 
 
-                    if (response.data.status === true) {
+                    if (response.data.is_match === true) {
                         Swal.fire({
-                            title: 'Link Sent',
-                            text: response.data.message,
+                            title: 'ID Verification Match',
+                            text: "ID Verification match found. An agent will get in touch shortly.",
                             icon: 'success',
                             customClass: 'sweet-alerts',
                         }).then((result) => {
@@ -102,8 +102,8 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                         });
                     } else {
                         Swal.fire({
-                            title: 'Error!',
-                            text: response.data.message,
+                            title: 'ID Verification Mismatch!',
+                            text: "One or more matches not found",
                             icon: 'error',
                             customClass: 'sweet-alerts'
                         });
