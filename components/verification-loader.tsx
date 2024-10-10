@@ -4,9 +4,11 @@ import "../components/verification-loader.css";
 
 interface props {
     open?: boolean;
+    loadingTitle?: string;
 }
+// Verifying, just a moment....
 
-const VerificationLoader: React.FC<props> = ({ open }) => {
+const VerificationLoader: React.FC<props> = ({ open, loadingTitle }) => {
 
     if (!open) return null;
     return (
@@ -16,7 +18,7 @@ const VerificationLoader: React.FC<props> = ({ open }) => {
                     <div className=' grid place-items-center mb-8'>
                         <span className="loader"></span>
                     </div>
-                    <h1 className=' text-center text-lg text-[#4361EE]'>Submitting, just a moment....</h1>
+                    <h1 className=' text-center text-lg text-[#4361EE]'>{loadingTitle}</h1>
                 </div>
 
             </div>

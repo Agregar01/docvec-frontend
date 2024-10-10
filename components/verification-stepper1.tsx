@@ -1,8 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import axios from 'axios';
-import VerificationLoader from './verification-loader';
+import axios from 'axios';// Import axios if you're using it
+import Loader from "../components/verification-loader";
 
 interface VerificationModalProps {
     isOpen: boolean;
@@ -12,9 +12,9 @@ interface VerificationModalProps {
 
 export default function VerificationModal({ isOpen, closeModal, formData }: VerificationModalProps) {
     const [verificationData, setVerificationData] = useState<any>(null);
-    const [showWaitingLoader, setshowWaitingLoader] = useState<boolean>(false);
+    const [showLoadingModal, setshowLoadingModal] = useState<boolean>(false);
 
-    const [businessData, setBusinessData] = useState<{ name: string, email: string, business: string, phone: string, address: string, country: string } | null>(null);
+    const [businessData, setBusinessData] = useState<{ name: string, email: string, business: string, phone: string, address: string, country: string, core_user_id: number } | null>(null);
 
     useEffect(() => {
         // Get and parse businessData from localStorage
@@ -24,8 +24,6 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
         }
     }, []);
 
-
-
     useEffect(() => {
         if (isOpen && formData) {
             const data = {
@@ -33,22 +31,19 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                 phone: formData.get("phone"),
                 firstname: formData.get("firstname"),
                 lastname: formData.get("lastname"),
-                country: formData.get("country"),
-                document_type: formData.get("document_type"),
-                id_number: formData.get("id_number"),
-                image: formData.get("selfie"),
-                image2: formData.get("ghana_card_front"),
-                image3: formData.get("ghana_card_back"),
+                submitted_image: formData.get("submitted_image"),
+                address: formData.get("address"),
                 attendant: "michael amoo",
-              
-
+                client_id: "7908909999",
+                type: formData.get("type"),
+                date_of_birth: formData.get("date_of_birth")
+                // api_key: "KYLFENkFF98vQiJRyjIfbguUhvwkS51kh0lDcoZcTl8"
             };
             setVerificationData(data);
         }
     }, [isOpen, formData]);
 
     const showVerificationConfirmAlert = async () => {
-
         const initiator = {
             name: businessData?.name,
             phone: businessData?.phone,
@@ -56,6 +51,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
             country: businessData?.country,
             address: businessData?.address,
             business: businessData?.business,
+            core_user_id: businessData?.core_user_id
         }
 
         Swal.fire({
@@ -71,7 +67,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
         }).then(async (result) => {
             if (result.isConfirmed) {
                 closeModal();
-                setshowWaitingLoader(true);
+                setshowLoadingModal(true);
                 try {
                     // Create FormData for API call
                     const data = new FormData();
@@ -79,66 +75,44 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     data.append("phone", verificationData?.phone || '');
                     data.append("firstname", verificationData?.firstname || '');
                     data.append("lastname", verificationData?.lastname || '');
-                    data.append("country", verificationData?.country || '');
-                    data.append("document_type", verificationData?.document_type || '');
-                    data.append("id_number", verificationData?.id_number || '');
-                    data.append("attendant", verificationData?.attendant || '');
+                    // data.append("attendant", verificationData?.attendant || '');
                     data.append("initiator", JSON.stringify(initiator));
-                   
+                    data.append("address", verificationData.address);
+                    data.append("client_id", verificationData.client_id);
+                    data.append("type", verificationData?.type);
+                    data.append("date_of_birth", verificationData.date_of_birth);
 
-
-
-
-                    if (verificationData?.image) {
-                        data.append("selfie", verificationData?.image); // Append image file
-                    }
-                    if (verificationData?.image2) {
-                        data.append("ghana_card_front", verificationData?.image2); // Append image file
-                    }
-                    if (verificationData?.image3) {
-                        data.append("ghana_card_back", verificationData?.image3); // Append image file
-                    }
+                    // if (verificationData?.submitted_image) {
+                    //     data.append("submitted_image", verificationData?.submitted_image); // Append image file
+                    // }
 
                     // Make API call
-                    const url = `https://verifications.agregartech.com/api/v1/id-cards/complete-verification/business/`;
-                    const response = await axios.post(url, data, {
+                    const initiate_url = "https://verifications.agregartech.com/api/v1/id-cards/trigger-email/";
+                    // const url = `${process.env.NEXT_PUBLIC_BASE_VIDEOKYC_BACKEND_URL}video-kyc/verify/client/`;
+                    const response = await axios.post(initiate_url, data, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }
                     });
-                    console.log(response.data);
-                    setshowWaitingLoader(false);
 
-
-                    if (Boolean(response.data.is_valid_id.status) === true && Boolean(response.data.facial_match) === true) {
-                        console.log("nnnnnn");
+                    if (response.data.status === true) {
+                        console.log("yesssss");
 
                         Swal.fire({
-                            title: 'National ID Verified',
-                            text: "National id verification matched!",
+                            title: 'Email Link Sent',
+                            text: response.data.message,
                             icon: 'success',
                             customClass: 'sweet-alerts'
                         });
                     }
-
-                    else if (response.data.is_valid_id.status === true && response.data.facial_match === false) {
+                    else if (response.data.status === false) {
                         Swal.fire({
-                            title: 'National ID Verified',
-                            text: "National id is valid, but facial match failed",
-                            icon: 'info',
-                            customClass: 'sweet-alerts'
-                        });
-                    }
-
-                    else {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: "ID verification match not found. invalid ID",
+                            title: 'Email Link Could Not Be Sent',
+                            text: response.data.message,
                             icon: 'error',
                             customClass: 'sweet-alerts'
                         });
                     }
-
                 } catch (error) {
                     Swal.fire({
                         title: 'Error!',
@@ -148,7 +122,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                     });
                 } finally {
                     closeModal();
-                    setshowWaitingLoader(false);
+                    setshowLoadingModal(false);
                 }
             }
         });
@@ -156,8 +130,7 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
 
     return (
         <>
-            <VerificationLoader open={showWaitingLoader} />
-
+            <Loader open={showLoadingModal} loadingTitle='Submitting, just a moment....' />
             <Transition appear show={isOpen} as={Fragment}>
                 <Dialog as="div" open={isOpen} onClose={closeModal}>
                     <Transition.Child
@@ -183,25 +156,17 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                                 leaveTo="opacity-0 scale-95"
                             >
                                 <Dialog.Panel className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-xl my-8 text-black dark:text-white-dark">
-                                    {/* <div className="flex py-2 bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-center">
-                                    <span className="flex items-center justify-center w-16 h-16 rounded-full bg-[#f1f2f3] dark:bg-white/10">
-                                        <svg>...</svg>
-                                    </span>
-                                </div> */}
+                                    <div className="flex py-2 bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-center">
+                                        <span className="flex items-center justify-center w-16 h-16 rounded-full bg-[#f1f2f3] dark:bg-white/10">
+                                            <svg>...</svg>
+                                        </span>
+                                    </div>
                                     <div className="p-5">
                                         <div className="py-5 text-white-dark text-center">
                                             <p className='font-bold text-xl'>
                                                 Confirm Verification Details.
                                             </p>
                                             <div className="mt-5 px-2">
-                                                <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                    <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">First Name</h6>
-                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.firstname}</h6>
-                                                </div>
-                                                <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                    <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Last Name</h6>
-                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.lastname}</h6>
-                                                </div>
                                                 <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
                                                     <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Email</h6>
                                                     <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.email}</h6>
@@ -211,48 +176,36 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
                                                     <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.phone}</h6>
                                                 </div>
                                                 <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                    <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Country</h6>
-                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country.name}</h6>
+                                                    <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">First Name</h6>
+                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.firstname}</h6>
                                                 </div>
                                                 <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
-                                                    <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Document Type</h6>
-                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.country.name}</h6>
+                                                    <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Last Name</h6>
+                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.lastname}</h6>
                                                 </div>
-                                                <div className=' grid grid-cols-1 lg:grid-cols-3 gap-5'>
-                                                    <div className="flex justify-center py-4">
-                                                        {verificationData?.image ? (
-                                                            <img
-                                                                src={URL.createObjectURL(verificationData?.image as File)}
-                                                                alt="Uploaded"
-                                                                className="h-48 w-48 object-contain rounded-lg"
-                                                            />
-                                                        ) : (
-                                                            <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex justify-center py-4">
-                                                        {verificationData?.image2 ? (
-                                                            <img
-                                                                src={URL.createObjectURL(verificationData?.image2 as File)}
-                                                                alt="Uploaded"
-                                                                className="h-48 w-48 object-contain rounded-lg"
-                                                            />
-                                                        ) : (
-                                                            <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex justify-center py-4">
-                                                        {verificationData?.image3 ? (
-                                                            <img
-                                                                src={URL.createObjectURL(verificationData?.image3 as File)}
-                                                                alt="Uploaded"
-                                                                className="h-48 w-48 object-contain rounded-lg"
-                                                            />
-                                                        ) : (
-                                                            <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
-                                                        )}
-                                                    </div>
+                                                <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
+                                                    <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Address</h6>
+                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.address}</h6>
                                                 </div>
+                                                <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
+                                                    <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Verification Type</h6>
+                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.type}</h6>
+                                                </div>
+                                                <div className="border-b border-[#ebedf2] dark:border-[#1b2e4b] justify-between flex py-2">
+                                                    <h6 className="text-[18px] font-bold text-[#515365] dark:text-white-dark">Date Of Birth</h6>
+                                                    <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.date_of_birth}</h6>
+                                                </div>
+                                                {/* <div className="flex justify-center py-4">
+                                                    {verificationData?.submitted_image ? (
+                                                        <img
+                                                            src={URL.createObjectURL(verificationData?.submitted_image as File)}
+                                                            alt="Uploaded"
+                                                            className="h-48 w-48 object-contain rounded-lg"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-md text-slate-500 dark:text-white-dark">No image uploaded</span>
+                                                    )}
+                                                </div> */}
                                             </div>
                                             <button onClick={showVerificationConfirmAlert} type="button" className="btn btn-primary hover:bg-primary/80 text-white font-semibold w-full mt-5">
                                                 Proceed
@@ -268,3 +221,11 @@ export default function VerificationModal({ isOpen, closeModal, formData }: Veri
         </>
     );
 }
+
+
+
+
+
+
+
+

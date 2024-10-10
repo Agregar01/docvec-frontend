@@ -1,338 +1,70 @@
 "use client";
-import DropDownCard from "@/components/dropdown-verifications";
 import IconCamera from "@/components/icon/icon-camera";
 import VerificationModal from "@/components/verification-stepper1";
-import VerificationModal2 from "@/components/verification-stepper2";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Flatpickr from 'react-flatpickr';
+import { useSelector } from 'react-redux';
+import { IRootState } from '@/store';
+import 'flatpickr/dist/flatpickr.css';
 
 
-interface Countries {
-    id: string,
-    name: string,
-    code: string
-}
 
-interface IDType {
-    id: string,
-    name: string,
-    code: string
-}
 export default function InitiateVerification() {
     const [isModalOpen, setModalOpen] = useState(false);
     const [formData, setFormData] = useState<FormData | null>(null);
     const [image, setImage] = useState<File | null>(null);
-    const [image2, setimage2] = useState<File | null>(null);
-    const [image3, setimage3] = useState<File | null>(null);
-    const [showForm1, setshowForm1] = useState<boolean>(false);
-    const [showForm2, setshowForm2] = useState<boolean>(false);
-    // const [countries, setCountries] = useState([]);
-    const [countries, setCountries] = useState<Countries[]>([]);
-    const [idType, setIDType] = useState<IDType[]>([]);
+    // const [dateOfBirth, setDateOfBirth] = useState<Date[]>([]);
 
-
-    // useEffect(() => {
-    //     axios.get("https://verifications.agregartech.com/api/v1/common/countries/").then((response) => {
-    //         const data = response.data;
-    //         console.log(data);
-    //         setCountries(data);
-    //     }).catch((err) => {
-    //         console.log(err);
-    //     })
-    // }, []);
-
-    // const [docTypes, setdocTypes] = useState([]);
-
-    // useEffect(() => {
-    //     axios.get("https://verifications.agregartech.com/api/v1/common/document-type/").then((response) => {
-    //         const data = response.data;
-    //         setdocTypes(data);
-    //         console.log(data);
-    //     })
-
-    // }, [])
-
-    useEffect(() => {
-        const countryList: Countries[] = [
-            { id: 'bbad08e7-1e6e-4b40-9536-7cdc49b844c8', name: 'Ghana', code: 'GH' },
-            { id: '65a225a3-aba4-407f-bd3c-deec9a8e20d3', name: 'Nigeria', code: 'NG' },
-            { id: 'b0022c65-b8d3-468e-b1a4-fefed31ae919', name: 'Ivory Coast', code: 'CI' },
-        ];
-
-        setCountries(countryList); // Set the countries array in the state
-    }, []);
-
-    useEffect(() => {
-        const idTypeList: IDType[] = [
-            { id: '4c28f31f-22fd-41ed-a5d4-758b50813f21', name: 'National ID', code: 'GH' },
-            { id: '7d68dd38-7ee8-4521-9d47-caad5c280a6c', name: 'Drivers License', code: 'NG' },
-            { id: '5d0f04cd-2d8a-41dd-a8b3-94f742575b82', name: 'Voters ID', code: 'CI' },
-        ];
-
-        setIDType(idTypeList); // Set the countries array in the state
-    }, []);
+    
+    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
 
     const [verificationData, setVerificationData] = useState({
         email: "",
         phone: "",
         firstname: "",
         lastname: "",
-        country: "",
-        idType: "",
-        id_number: "",
-        document_type: "",
-        countryname: ""
+        address: "",
+        type:"",
+        dateOfBirth: ""
     });
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null; // Get the first selected file or null
+        const file = e.target.files?.[0] || null;
         setImage(file);
     };
 
-    const handleImage2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null; // Get the first selected file or null
-        setimage2(file);
-    }
-
-    const handleImage3Change = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null; // Get the first selected file or null
-        setimage3(file);
-    }
 
     const prepareFormData = () => {
         const data = new FormData();
-
         data.append("email", verificationData.email);
         data.append("phone", verificationData.phone);
         data.append("firstname", verificationData.firstname);
         data.append("lastname", verificationData.lastname);
-        data.append("country", verificationData.country);
-        data.append("document_type", verificationData.document_type);
-        data.append("id_number", verificationData.id_number);
+        data.append("address", verificationData.address);
+        data.append("type",verificationData.type);
+        data.append("date_of_birth",verificationData.dateOfBirth);
 
         if (image) {
-            data.append("selfie", image); // Append the single image file
+            data.append("submitted_image", image); // Append the single image file
         }
-        if (image2) {
-            data.append("ghana_card_front", image2); // Append the single image file
-        }
-        if (image3) {
-            data.append("ghana_card_back", image3); // Append the single image file
-        }
-
-        axios.post("")
 
         setFormData(data);
         setModalOpen(true);
-    };
-
-    const [isModalOpen2, setModalOpen2] = useState(false);
-    const [formData2, setFormData2] = useState<FormData | null>(null);
-
-    const [verificationData2, setVerificationData2] = useState({
-        email: "",
-        phone: "",
-        firstname: "",
-        lastname: "",
-        attendant: "admin"
-    });
-
-    const prepareFormData2 = () => {
-
-        const data = new FormData();
-        data.append("email", verificationData2.email);
-        data.append("phone", verificationData2.phone);
-        data.append("firstname", verificationData2.firstname);
-        data.append("lastname", verificationData2.lastname);
-        data.append("attendant", verificationData2.attendant);
-
-        setModalOpen2(true);
-        setFormData2(data);
-    }
+    };    
 
     return (
         <div>
-
             <div className="panel flex items-center overflow-x-auto whitespace-nowrap p-3 text-primary mb-5 bg-blue-100">
                 <div className="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
                     <IconCamera />
                 </div>
-                <span className="ltr:mr-3 rtl:ml-3 text-xl text-primary">DOCUMENTS VERIFICATION</span>
+                <span className="ltr:mr-3 rtl:ml-3 text-xl text-primary">DOCUMENT VERIFICATION</span>
             </div>
-            {/* <div className=" space-y-4">
-                <DropDownCard open={!showForm1} handleClick={() => {
-                    setshowForm1(!showForm1);
-                }} />
-                {showForm1 ?
-                    <div className="w-full bg-white shadow-[4px_6px_10px_-3px_#bfc9d4] rounded-xl border border-white-light dark:border-[#1b2e4b] dark:bg-[#191e3a] dark:shadow-none p-5">
-                        <div className="space-y-5 mt-5">
-                            <div>
-                                <div className="text-center text-xl mb-10">Kindly provide the details below to facilitate verification</div>
-                            </div>
-                            <div className=" px-8">
-                                <div>
-                                    <div className=" grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
-                                        <div>
-                                            <label htmlFor="gridEmail">First Name</label>
-                                            <input
-                                                required
-                                                id="gridEmail"
-                                                type="email"
-                                                placeholder="Enter First Name"
-                                                className="form-input"
-                                                value={verificationData.firstname}
-                                                onChange={(e) => setVerificationData({ ...verificationData, firstname: e.target.value })}
-                                            />
-                                        </div>
-                                        <div >
-                                            <label htmlFor="gridEmail">Last Name</label>
-                                            <input
-                                                required
-                                                id="gridEmail"
-                                                type="email"
-                                                placeholder="Enter Last Name"
-                                                className="form-input"
-                                                value={verificationData.lastname}
-                                                onChange={(e) => setVerificationData({ ...verificationData, lastname: e.target.value })}
-                                            />
-                                        </div>
 
-                                    </div>
-                                    <div>
-                                        <div className="mt-5">
-                                            <label htmlFor="gridEmail">Email</label>
-                                            <input
-                                                required
-                                                id="gridEmail"
-                                                type="email"
-                                                placeholder="Enter Email"
-                                                className="form-input"
-                                                value={verificationData.email}
-                                                onChange={(e) => setVerificationData({ ...verificationData, email: e.target.value })}
-                                            />
-                                        </div>
-                                        <div className="mt-5">
-                                            <label htmlFor="gridEmail">Phone</label>
-                                            <input
-                                                required
-                                                id="gridEmail"
-                                                type="number"
-                                                placeholder="Enter Phone"
-                                                className="form-input"
-                                                value={verificationData.phone}
-                                                onChange={(e) => setVerificationData({ ...verificationData, phone: e.target.value })}
-                                            />
-                                        </div>
-                                        <div className="mt-5">
-                                            <label htmlFor="gridCity">Select Country</label>
-                                            <select
-                                                required
-                                                name='classIntructor'
-                                                id="role-select"
-                                                className="form-input cursor-pointer"
-                                                value={verificationData.country}
-                                                onChange={(e) => setVerificationData({ ...verificationData, country: e.target.value })}
-                                            >
-                                                <option value="" disabled>Select Country</option>
-                                                {countries.map((list: Countries) => (
-                                                <option key={list.id} value={list.id}>
-                                                    {list.name}
-                                                </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className=" grid lg:grid-cols-2 gap-6 grid-cols-1 mt-5">
-                                            <div className="">
-                                                <label htmlFor="gridCity">Select ID Type</label>
-                                                <select
-                                                    required
-                                                    name='classIntructor'
-                                                    id="role-select"
-                                                    className="form-input cursor-pointer"
-                                                    value={verificationData.document_type}
-                                                    onChange={(e) => setVerificationData({ ...verificationData, document_type: e.target.value })}
-                                                >
-                                                    <option value="" disabled>Select ID Type</option>
-                                                    {idType.map((list: IDType) => (
-                                                    <option key={list.id} value={list.id}>
-                                                        {list.name}
-                                                    </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label htmlFor="gridEmail">ID Number</label>
-                                                <input
-                                                    required
-                                                    id="gridEmail"
-                                                    type="text"
-                                                    placeholder="Enter ID Number"
-                                                    className="form-input"
-                                                    value={verificationData.id_number}
-                                                    onChange={(e) => setVerificationData({ ...verificationData, id_number: e.target.value })}
-                                                />
-                                            </div>
-
-                                        </div>
-                                        <div className=" grid grid-cols-1 lg:grid-cols-3 mt-5 gap-5">
-                                            <div className="">
-                                                <label htmlFor="ctnFile">Upload passport picture</label>
-                                                <input
-
-                                                    id="imageUpload"
-                                                    type="file"
-                                                    className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
-                                                    required
-                                                    onChange={handleImageChange}
-                                                    accept="image/*"
-                                                />
-                                            </div>
-                                            <div className="">
-                                                <label htmlFor="ctnFile">Upload front of National ID</label>
-                                                <input
-                                                    id="imageUpload"
-                                                    type="file"
-                                                    className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
-                                                    required
-                                                    onChange={handleImage2Change}
-                                                    accept="image/*"
-                                                />
-                                            </div>
-                                            <div className="">
-                                                <label htmlFor="ctnFile">Upload back of National ID</label>
-                                                <input
-                                                    id="imageUpload"
-                                                    type="file"
-                                                    className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file-ml-5 file:text-white file:hover:bg-primary"
-                                                    required
-                                                    onChange={handleImage3Change}
-                                                    accept="image/*"
-                                                />
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <VerificationModal isOpen={isModalOpen} closeModal={() => setModalOpen(false)} formData={formData} />
-                            <button type="button" onClick={prepareFormData} className="btn btn-primary ltr:ml-auto rtl:mr-auto mt-10">
-                                Initiate Verification
-                            </button>
-
-                        </div>
-                    </div>
-                    : null}
-                <DropDownCard open={!showForm2} handleClick={() => {
-                    setshowForm2(!showForm2);
-                }} />
-            </div> */}
-            {/* {showForm2 ? */}
-            <div className="mb-5 flex items-center justify-center  mt-5">
+            <div className="mb-5 flex items-center justify-center">
                 <div className="w-full bg-white shadow-[4px_6px_10px_-3px_#bfc9d4] rounded-xl border border-white-light dark:border-[#1b2e4b] dark:bg-[#191e3a] dark:shadow-none p-5">
                     <div className="space-y-5 mt-5">
-                        <div className="mx-10 ">
+                        <div className="mx-10 px-[50px]">
                             <div className="text-center text-xl mb-10">Kindly provide the details below to facilitate verification</div>
                             <div>
                                 <label htmlFor="gridEmail">Email <span className=" text-red-600">*</span></label>
@@ -341,57 +73,97 @@ export default function InitiateVerification() {
                                     type="email"
                                     placeholder="Enter Email"
                                     className="form-input"
-                                    value={verificationData2.email}
-                                    onChange={(e) => setVerificationData2({ ...verificationData2, email: e.target.value })}
+                                    value={verificationData.email}
+                                    onChange={(e) => setVerificationData({ ...verificationData, email: e.target.value })}
                                 />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5 mt-5">
+                                <div className="mt-5">
+                                    <label htmlFor="phone">Phone <span className=" text-red-600">*</span></label>
+                                    <input
+                                        id="phone"
+                                        type="text"
+                                        placeholder="Enter Phone"
+                                        className="form-input"
+                                        value={verificationData.phone}
+                                        onChange={(e) => setVerificationData({ ...verificationData, phone: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="mt-5">
+                                    <label htmlFor="date_of_birth">Date of Birth <span className=" text-red-600">*</span></label>
+                                    <Flatpickr
+                                        placeholder="Select date"
+                                        className="form-input"
+                                        value={verificationData.dateOfBirth}
+                                        onChange={(dates: Date[]) => {
+                                            const selectedDate = dates.length > 0 ? dates[0].toISOString().split("T")[0] : "";
+                                            setVerificationData({ ...verificationData, dateOfBirth: selectedDate });
+                                        }}
+                                        />
+                                </div>
+                            </div>
+
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5 mt-5">
+                                <div className="w-full">
+                                    <label htmlFor="firstName" className="block mb-2">First Name <span className=" text-red-600">*</span></label>
+                                    <input
+                                        id="firstName"
+                                        type="text"
+                                        placeholder="Enter First Name"
+                                        className="form-input w-full"
+                                        value={verificationData.firstname}
+                                        onChange={(e) => setVerificationData({ ...verificationData, firstname: e.target.value })}
+                                    />
+                                </div>
+                                <div className="w-full">
+                                    <label htmlFor="lastName" className="block mb-2">Last Name <span className=" text-red-600">*</span></label>
+                                    <input
+                                        id="lastName"
+                                        type="text"
+                                        placeholder="Enter Last Name"
+                                        className="form-input w-full"
+                                        value={verificationData.lastname}
+                                        onChange={(e) => setVerificationData({ ...verificationData, lastname: e.target.value })}
+                                    />
+                                </div>
                             </div>
                             <div className="mt-5">
-                                <label htmlFor="phone">Phone <span className=" text-red-600">*</span></label>
+                                <label htmlFor="gridCity">Address <span className=" text-red-600">*</span></label>
                                 <input
-                                    id="phone"
+                                    id="gridCity"
                                     type="text"
-                                    placeholder="Enter Phone"
+                                    placeholder="Enter Address"
                                     className="form-input"
-                                    value={verificationData2.phone}
-                                    onChange={(e) => setVerificationData2({ ...verificationData2, phone: e.target.value })}
+                                    value={verificationData.address}
+                                    onChange={(e) => setVerificationData({ ...verificationData, address: e.target.value })}
                                 />
                             </div>
-                            <div className=" grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
-                                <div className="">
-                                    <label htmlFor="gridCity">First Name <span className=" text-red-600">*</span></label>
-                                    <input
-                                        id="gridCity"
-                                        type="text"
-                                        placeholder="Enter First Name"
-                                        className="form-input"
-                                        value={verificationData2.firstname}
-                                        onChange={(e) => setVerificationData2({ ...verificationData2, firstname: e.target.value })}
-                                    />
-                                </div>
-                                <div className="">
-                                    <label htmlFor="gridCity">Last Name <span className=" text-red-600">*</span></label>
-                                    <input
-                                        id="gridCity"
-                                        type="text"
-                                        placeholder="Enter First Name"
-                                        className="form-input"
-                                        value={verificationData2.lastname}
-                                        onChange={(e) => setVerificationData2({ ...verificationData2, lastname: e.target.value })}
-                                    />
-                                </div>
+                            <div className=" mt-5">
+                                <label htmlFor="gridCity">Select Verification Type <span className=" text-red-600">*</span></label>
+                                <select
+                                    required
+                                    name='classIntructor'
+                                    id="role-select"
+                                    className="form-input cursor-pointer"
+                                    value={verificationData.type}
+                                    onChange={(e) => setVerificationData({ ...verificationData, type: e.target.value })}
+                                >
+                                    <option value="" disabled>Select Verification Type</option>
+                                    <option value="ONBOARDING">ONBOARDING</option>
+                                    <option value="STANDARD">STANDARD</option>
+                                </select>
                             </div>
 
-
-                            <VerificationModal2 isOpen={isModalOpen2} closeModal={() => setModalOpen2(false)} formData={formData2} />
-                            <button type="button" onClick={prepareFormData2} className="btn btn-primary ltr:ml-auto rtl:mr-auto mt-10">
+                            <VerificationModal isOpen={isModalOpen} closeModal={() => setModalOpen(false)} formData={formData} />
+                            <button type="button" onClick={prepareFormData} className="btn btn-primary ltr:ml-auto rtl:mr-auto mt-10">
                                 Initiate Verification
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            {/* : null} */}
         </div>
     );
 }
