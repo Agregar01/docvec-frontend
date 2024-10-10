@@ -22,7 +22,7 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                 country: formData.get("country"),
                 document_type: formData.get("document_type"),
                 id_number: formData.get("id_number"),
-                imageSrc: formData.get("selfie"),
+                imageSrc: formData.get("video_image"),
                 image2: formData.get("ghana_card_front"),
                 image3: formData.get("ghana_card_back"),
                 id: formData.get("id"),
@@ -34,11 +34,12 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
         }
     }, [isOpen, formData]);
 
-    const showVerificationConfirmAlert = async () => {
+    const showVerificationConfirmAlert = async (docVecCompletion: boolean) => {
+
         Swal.fire({
             icon: 'warning',
             title: 'Confirm to proceed',
-            text: "A link will be sent to the users email",
+            text: docVecCompletion ? '' : 'A link will be sent to the users email',
             showCancelButton: true,
             confirmButtonText: 'Confirm',
             confirmButtonColor: "#3085d6", // Customize as needed
@@ -67,7 +68,7 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                     data.append("id", verificationData?.id || '');
 
                     if (verificationData?.imageSrc) {
-                        data.append("selfie", blob); // Append image file
+                        data.append("video_image", blob); // Append image file
                     }
                     if (verificationData?.image2) {
                         data.append("ghana_card_front", verificationData?.image2); // Append image file
@@ -174,7 +175,7 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                                                     <h6 className="text-md text-slate-500 dark:text-white-dark">{verificationData?.id_number}</h6>
                                                 </div>
                                                 <div className=' grid grid-cols-2 gap-6 mt-5'>
-                                                    <div className="flex justify-center py-4">
+                                                    <div className="flex justify-center">
                                                         {verificationData?.image3 ? (
                                                             <img
                                                                 src={URL.createObjectURL(verificationData?.image3 as File)}
@@ -200,7 +201,7 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                                                 </div>
 
                                             </div>
-                                            <button onClick={showVerificationConfirmAlert} type="button" className="btn btn-primary hover:bg-primary/80 text-white font-semibold w-full mt-5">
+                                            <button onClick={() => showVerificationConfirmAlert(true)}  type="button" className="btn btn-primary hover:bg-primary/80 text-white font-semibold w-full mt-5">
                                                 Proceed
                                             </button>
                                         </div>

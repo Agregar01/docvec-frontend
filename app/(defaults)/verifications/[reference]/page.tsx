@@ -1,38 +1,69 @@
 'use client';
 import IconDownload from '@/components/icon/icon-download';
-import IconEdit from '@/components/icon/icon-edit';
-import IconPlus from '@/components/icon/icon-plus';
 import IconPrinter from '@/components/icon/icon-printer';
-import IconSend from '@/components/icon/icon-send';
 import axios from 'axios';
-import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
+import dayjs from 'dayjs';
+import "../../../../components/verification-loader.css";
 
+interface Spoof {
+    is_real: boolean;
+    confidence: number;
+    antispoof_score: number;
+}
+interface Comparison {
+    verified: boolean;
+    threshold: number;
+    time_taken: number;
+}
 interface VerificationDetails {
-    phone?: string;
-    country: string;
-    reference?: string;
-    created_at?: string;
-    verification_status?: string;
-    link_sent?: string;
-    verification_completed_time?: string;
-    verification_completed?: boolean;
-    longitude?: string;
-    latitude?: string;
-    firstname: string;
-    lastname: string;
-    id_number: string;
-    document_type: string;
-    valid_card: boolean;
-    facial_match: boolean;
-    initiator: {
-        name: string;
-        email: string;
+    spoof: Spoof;
+    comparison: Comparison;
+    status: boolean;
+}
+interface VerificationDetails {
+    personal_data: {
+        candidate_name: string;
+        candidate_email: string;
+        candidate_phone: string;
+        candidate_dob: string;
+    },
+    sim_swap_verification: {
+        owner: string;
         phone: string;
-        address: string;
+        network: string;
+        sim_date: string;
+        swap_detected: boolean;
+    },
+    verification_records: {
+        reference: string;
+        link_sent: boolean;
+        email_sent_time: string;
+        video_verification_start_time: string;
+        verification_completed_time: string;
+        verification_duration: string;
+        verification_completed: boolean;
+        video_image: string;
+        submitted_image: string;
+        consent_sorted: boolean;
+        type: string;
+    },
+    device_information: {
+        ip: string;
+        host: string;
+        user_agent: string;
     }
+    ofac_search: {
+        ofac_search_done: boolean,
+        ofac_search_match_found: boolean
+    },
+
+    facial_comparison_details: {
+        verification_details: VerificationDetails
+    }
+
 }
 
 const ComponentsAppsInvoicePreview = () => {
@@ -41,8 +72,6 @@ const ComponentsAppsInvoicePreview = () => {
     };
 
     const [details, setDetails] = useState<VerificationDetails | null>(null);
-    console.log(details);
-
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const params = useParams<{ reference: string }>();
@@ -52,6 +81,7 @@ const ComponentsAppsInvoicePreview = () => {
         const fetchDetails = async () => {
             try {
                 const url = `https://verifications.agregartech.com/api/v1/id-cards/verifications/${reference}/`;
+                
                 const response = await axios.get(url);
                 setDetails(response.data);  // Assuming the response contains the data you need
             } catch (err: any) {
@@ -63,16 +93,6 @@ const ComponentsAppsInvoicePreview = () => {
         fetchDetails();
     }, [reference]);
 
-    const formatDate = (date: string | number | Date | undefined) => {
-        if (date) {
-            const dt = new Date(date);
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const month = months[dt.getMonth()];
-            const day = dt.getDate() < 10 ? '0' + dt.getDate() : dt.getDate();
-            return day + '-' + month + '-' + dt.getFullYear();
-        }
-        return '';
-    };
 
     if (loading) return <div className=' grid place-items-center my-28'>
         <span className="loader"></span>
@@ -83,7 +103,7 @@ const ComponentsAppsInvoicePreview = () => {
         <div className="mx-[50px]">
             <div className="mb-6 flex flex-wrap items-center justify-center gap-4 lg:justify-end">
                 <button type="button" className="btn btn-primary gap-2" onClick={() => exportTable()}>
-                    <IconPrinter /> 
+                    <IconPrinter />
                     Print
                 </button>
                 <button type="button" className="btn btn-success gap-2">
@@ -93,13 +113,13 @@ const ComponentsAppsInvoicePreview = () => {
             </div>
 
             <div className="panel">
-                <div className="flex flex-wrap justify-between gap-4 px-4">
+                <div className="flex flex-wrap justify-between gap-4 px-10">
                     <div className="text-2xl font-bold uppercase text-orange-600">Verification Report</div>
                     <div className="shrink-0">
                         <Image src="/agregar-logo.png" alt="img" width={150} height={200} />
                     </div>
                 </div>
-                <div className="px-4 ltr:text-right rtl:text-left">
+                <div className="px-10 ltr:text-right rtl:text-left">
                     <div className="mt-6 space-y-1 text-white-dark">
                         <div>Trinity Baptist Church Building</div>
                         <div>Opposite UPSA, East Legon</div>
@@ -108,93 +128,211 @@ const ComponentsAppsInvoicePreview = () => {
                     </div>
                 </div>
 
-                <hr className="my-6 border-orange-600 dark:border-[#1b2e4b]" />
+                <hr className="my-6 border-orange-600 dark:border-[#1b2e4b] mx-10" />
 
-                <div className="flex justify-between">
+                <div className="flex justify-between px-10">
                     <div className="space-y-1 text-white-dark grid-cols-1/2">
-                        <div>Verified For:</div>
-                        <div className="font-semibold text-black dark:text-white">{details?.initiator?.name}</div>
-                        <div>{details?.initiator?.address}</div>
-                        <div>{details?.initiator?.email}</div>
-                        <div>{details?.initiator?.phone}</div>
+                        <div className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">Client Images:</div>
+                        <div className="flex flex-row gap-10">
+                            <div className="div flex flex-col items-center">
+                                {details?.verification_records?.submitted_image && (
+                                <img
+                                    src={details.verification_records.submitted_image}
+                                    alt="Submitted Image"
+                                    className="w-40 h-40 object-cover" // Set a fixed width and height with Tailwind CSS
+                                />
+                                )}
+                            </div>
+                            <div className="div flex flex-col items-center">
+                                {details?.verification_records?.video_image && (
+                                <img
+                                    src={details.verification_records.video_image}
+                                    alt="Screenshot from video"
+                                    className="w-40 h-40 object-cover" // Set a fixed width and height with Tailwind CSS
+                                />
+                                )}
+                            </div>
+                        </div>
+
                     </div>
                     <div className="flex flex-col sm:flex-row justify-end">
                         <div className="">
+                            <h1 className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">  Client Personal Details:</h1>
                             <div className="mb-2 flex w-full items-center justify-between">
-                                <div className="text-white-dark">Candidate Name:</div>
-                                <div className="whitespace-nowrap">{details?.firstname} {details?.lastname}</div>
+                                <div><b>Client Name:</b> {details?.personal_data.candidate_name}</div>
                             </div>
                             <div className="mb-2 flex w-full items-center justify-between">
-                                <div className="text-white-dark">Candidate Phone:</div>
-                                <div>{details?.phone}</div>
+                                <div><b>Phone: </b>{details?.personal_data.candidate_phone}</div>
                             </div>
                             <div className="mb-2 flex w-full items-center justify-between">
-                                <div className="text-white-dark">Verification ID:</div>
-                                <div>{details?.reference}</div>
+                                <div><b>Email: </b>{details?.personal_data.candidate_email}</div>
                             </div>
                             <div className="mb-2 flex w-full items-center justify-between">
-                                <div className="text-white-dark">Verification Date</div>
-                                <div>{formatDate(details?.created_at)}</div>
-                            </div>
-                            <div className="mb-2 flex w-full items-center justify-between">
-                                <div className="text-white-dark">Initiator Name</div>
-                                <div>{details?.initiator?.name}</div>
+                                <div><b>Date of Birth: </b>{details?.personal_data.candidate_dob}</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <hr className="my-6 border-orange-600 dark:border-[#1b2e4b]" />
+                <hr className="my-6 border-orange-600 dark:border-[#1b2e4b] mx-10" />
 
-                <div className="flex justify-between">
-                    <div>
-                        <h5 className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">Verification Details</h5>
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Verification Status: </div>
-                            <div className="whitespace-nowrap">{details?.verification_status}</div>
-                        </div>
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Verification Link Sent: </div>
-                            <div className="whitespace-nowrap">{details?.link_sent}</div>
-                        </div>
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Time of completion: </div>
-                            <div className="whitespace-nowrap">{details?.verification_completed_time}</div>
-                        </div>
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Verification Completed: </div>
-                            <div className="whitespace-nowrap">{details?.verification_completed === true ? "COMPLETED" : "NOT COMPLETED"}</div>
-                        </div>
+                <div className="px-10">
 
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Facial Match: </div>
-                            <div className="whitespace-nowrap">{details?.facial_match === true ? "TRUE" : "FALSE"}</div>
+                    <div className="div flex gap-[50px]">
+                        <div className="grow basis-1/2">
+
+                            <div className="div">
+                                <h5 className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">Verification Details: </h5>
+                            </div>
+                            <div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Verification Reference ID: </div>
+                                    <div className="whitespace-nowrap">{details?.verification_records?.reference}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Verification Link Sent: </div>
+                                    <div className="whitespace-nowrap">{details?.verification_records?.link_sent}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Time Verification Link Sent: </div>
+                                    <div className="whitespace-nowrap">{dayjs(details?.verification_records?.email_sent_time).format('DD/MM/YYYY h:mm A')}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Time Client Started Verification:: </div>
+                                    <div className="whitespace-nowrap">{dayjs(details?.verification_records?.video_verification_start_time).format('DD/MM/YYYY h:mm A')}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Time of completion: </div>
+                                    <div className="whitespace-nowrap">{dayjs(details?.verification_records?.verification_completed_time).format('DD/MM/YYYY h:mm A')}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Verification Completion State: </div>
+                                    <div className="whitespace-nowrap">{details?.verification_records?.verification_completed === true ? "COMPLETED" : "INCOMPLETE"}</div>
+                                </div>
+                                
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Verification Type: </div>
+                                    <div className="whitespace-nowrap">{details?.verification_records?.type}</div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Is Valid ID:</div>
-                            <div className="whitespace-nowrap">{details?.valid_card === true ? "TRUE" : "FALSE"}</div>
+                        <div className="grow basis-1/2">
+
+                            <div className="div">
+                                <h5 className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">Facial Biometric Details: </h5>
+                            </div>
+                            <div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Deepfake, Spoof Detected: </div>
+                                    <div className="whitespace-nowrap">{details?.facial_comparison_details?.verification_details?.spoof?.is_real === false ? "YES" : "NO"}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Confidence score of face detected: </div>
+                                    <div className="whitespace-nowrap">{details?.facial_comparison_details?.verification_details?.spoof?.confidence}%</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Anti-Spoofing Confidence Score: </div>
+                                    <div className="whitespace-nowrap">{details?.facial_comparison_details?.verification_details?.spoof?.antispoof_score}%</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Facial Match Status: </div>
+                                    <div className="whitespace-nowrap">{details?.facial_comparison_details?.verification_details?.comparison?.verified === true ? "MATCH": "MISMATCH"}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Time Taken To Compare Faces: </div>
+                                    <div className="whitespace-nowrap">{details?.facial_comparison_details?.verification_details?.comparison?.time_taken}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Consent Sorted: </div>
+                                    <div className="whitespace-nowrap">{details?.verification_records?.consent_sorted === true ? "YES" : "NO"}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Threshold: </div>
+                                    <div className="whitespace-nowrap">{details?.facial_comparison_details?.verification_details?.comparison?.threshold}</div>
+                                </div>
+                            </div>
                         </div>
+                
                     </div>
 
-                    <div>
-                        <h5 className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">Verification Details</h5>
-
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Country:</div>
-                            <div className="whitespace-nowrap">{details?.country}</div>
-                        </div>
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">Document Type: </div>
-                            <div className="whitespace-nowrap">{details?.document_type}</div>
-                        </div>
-                        <div className="mb-2 flex w-full justify-between">
-                            <div className="text-white-dark">ID Number: </div>
-                            <div className="whitespace-nowrap">{details?.id_number}</div>
-                        </div>
-
-                    </div>
                 </div>
-                <hr className="my-6 border-orange-600 dark:border-[#1b2e4b]" />
+                <hr className="my-6 border-orange-600 dark:border-[#1b2e4b] mx-10" />
+
+                <div className="px-10">
+
+                    <div className="div flex gap-[50px]">
+                        <div className="grow basis-1/2">
+
+                            <div className="div">
+                                <h5 className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">SIM Swap Information: </h5>
+                            </div>
+                            <div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">SIM Owner: </div>
+                                    <div className="whitespace-nowrap">{details?.sim_swap_verification?.owner}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Phone Number: </div>
+                                    <div className="whitespace-nowrap">{details?.sim_swap_verification?.phone}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">Network: </div>
+                                    <div className="whitespace-nowrap">{details?.sim_swap_verification?.network}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">SIM Registration Date: </div>
+                                    <div className="whitespace-nowrap">{dayjs(details?.sim_swap_verification?.sim_date).format('DD/MM/YYYY h:mm A')}</div>
+                                </div>
+                                <div className="mb-2 flex w-full justify-between">
+                                    <div className="text-white-dark">SIM Swap Detected: </div>
+                                    <div className="whitespace-nowrap">{details?.sim_swap_verification?.swap_detected === true ? "YES" : "NO"}</div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div className="grow basis-1/2">
+                            <div className="flex flex-col">
+                                <div className="grow">
+                                    <div className="div">
+                                        <h5 className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">Sanctions List Check: </h5>
+                                    </div>
+                                    <div className="mb-2 flex w-full justify-between">
+                                        <div className="text-white-dark">Sanctions list, PEP check done: </div>
+                                        <div className="whitespace-nowrap">{details?.ofac_search?.ofac_search_done === false ? "NO" : "YES"}</div>
+                                    </div>
+                                    <div className="mb-2 flex w-full justify-between">
+                                        <div className="text-white-dark">Appeared on sanctioned list: </div>
+                                        <div className="whitespace-nowrap">{details?.ofac_search?.ofac_search_match_found === false ? "NO" : "YES"}</div>
+                                    </div>
+                                    
+                                </div>
+                                <div className="grow mt-5">
+                                    <div className="div">
+                                        <h5 className="text-dark text-lg font-semibold mb-3.5 dark:text-white-light">Device Information: </h5>
+                                    </div>
+                                    <div className="mb-2 flex w-full justify-between">
+                                        <div className="text-white-dark">IP Address of Client&apos;s Device: </div>
+                                        <div className="whitespace-nowrap">{details?.device_information?.ip}</div>
+                                    </div>
+                                    {/* <div className="mb-2 flex w-full justify-between">
+                                        <div className="text-white-dark">Candidate Browser Information: </div>
+                                        <div className="whitespace-nowrap">{details?.facial_comparison_details?.user_agent?.spoof?.confidence}</div>
+                                    </div> */}
+                                    <div className="mb-2 flex w-full justify-between">
+                                        <div className="text-white-dark">Anti-Spoofing Confidence Score: </div>
+                                        <div className="whitespace-nowrap">{details?.facial_comparison_details?.verification_details?.spoof?.antispoof_score}</div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                            
+                        </div>
+                
+                    </div>
+
+                </div>
+                
             </div>
         </div>
     );

@@ -18,9 +18,7 @@ import Link from 'next/link';
 import "../../../components/verification-loader.css";
 
 
-
-
-const PAGE_SIZES = [10, 20, 30, 50, 100];
+const PAGE_SIZES = [20, 30, 50, 100];
 
 interface Stats {
   total_verifications_count: number;
@@ -31,54 +29,77 @@ interface Stats {
   mismatched_week_count: number;
   pending_count: number;
   pending_week_count: number;
+
+  total_change_per_month: number;
+  matched_change_per_month: number;
+  mismatched_change_per_month: number;
+  pending_change_per_month: number;
 }
 
 
 const ComponentsDatatablesAdvanced = () => {
+  const [Loader, setLoader] = useState<boolean>(false);
   const [stats, setStats] = useState<Stats | null>(null);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [rowData, setRowData] = useState([]);
   const [initialRecords, setInitialRecords] = useState([]);
   const [recordsData, setRecordsData] = useState([]);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
-  const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
-    columnAccessor: 'created_at',
-    direction: 'desc',
-  });
+  const [pageSize] = useState(20);
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({columnAccessor: 'created_at',direction: 'desc',});
   const [search, setSearch] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [dateRange, setDateRange] = useState<Date[] | null>(null);
   const [filterTriggered, setFilterTriggered] = useState(false);
-
+  const [currentPage, setCurrentPage] = useState(1); // Start at page 1
+  const [totalPages, setTotalPages] = useState(0); // Total number of pages
+  const [tableLoading, setTableLoading] = useState<boolean>(false); // Local loader state for table
   const router = useRouter();
 
+
+  function handleNext() {
+    if (currentPage < totalPages) {
+        setCurrentPage((prev) => prev + 1);
+    }
+  }
+  function handlePrevious() {
+      if (currentPage > 1) {
+          setCurrentPage((prev) => prev - 1);
+      }
+  }
   useEffect(() => {
+    
     setIsMounted(true);
   }, []);
 
   useEffect(() => {
+    const stats_url = `https://verifications.agregartech.com/api/v1/id-cards/clients/${7908909999}/verification-statistics/`;
     const fetchData = async () => {
       try {
-        const response = await axios.get("https://verifications.agregartech.com/api/v1/id-cards/verifications/statistics");
+        const response = await axios.get(stats_url);
+        
         setStats(response.data);
       } catch (err: any) {
         setError(err.message);
       } finally {
-        // setLoading(false);
+        setLoading(false);
       }
     };
     fetchData();
   }, []);
-
+  
   useEffect(() => {
-    setLoading(true);
+    const verifs_url = `https://verifications.agregartech.com/api/v1/id-cards/clients/${7908909999}/verifications?page=${currentPage}`;
+    setLoader(true);
     const verificationData = async () => {
       try {
-        const verifications = await axios.get("https://verifications.agregartech.com/api/v1/id-cards/verifications");
-        setRowData(verifications.data);
+        const verifications = await axios.get(verifs_url);
+        setRowData(verifications.data.results);
+        setTotalPages(Math.ceil(verifications.data.count));
+        if (verifications.data) {
+          setLoader(false);
+        }
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -86,7 +107,7 @@ const ComponentsDatatablesAdvanced = () => {
       }
     };
     verificationData();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     const data = sortBy(rowData, sortStatus.columnAccessor);
@@ -96,7 +117,6 @@ const ComponentsDatatablesAdvanced = () => {
   useEffect(() => {
     let filteredRecords = [...initialRecords];
 
-    // Apply search filter
     if (search) {
       filteredRecords = filteredRecords.filter((record: any) =>
         record.reference.toLowerCase().includes(search.toLowerCase()) ||
@@ -106,7 +126,6 @@ const ComponentsDatatablesAdvanced = () => {
       );
     }
 
-    // Apply date range filter
     if (filterTriggered && dateRange && dateRange.length === 2) {
       const [startDate, endDate] = dateRange;
       const start = new Date(startDate);
@@ -119,7 +138,6 @@ const ComponentsDatatablesAdvanced = () => {
       });
     }
 
-    // Update pagination with filtered records
     const from = (page - 1) * pageSize;
     const to = from + pageSize;
     setRecordsData(filteredRecords.slice(from, to));
@@ -137,20 +155,20 @@ const ComponentsDatatablesAdvanced = () => {
   };
 
   const colors = { primary: "primary", secondary: "secondary", success: "success", danger: "danger", warning: "warning" };
-
   const handleRowClick = (reference: string) => {
     router.push(`/verifications/${reference}`);
   };
-
   const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
+
 
   return (
     <>
       {
-        loading ? <div className=' grid place-items-center my-28'>
+        Loader ? <div className=' grid place-items-center my-28'>
           <span className="loader"></span>
         </div> :
-          <><div className="mb-6 grid grid-cols-1 gap-6 text-white sm:grid-cols-2 xl:grid-cols-4 mt-6">
+
+          <><div className="mb-5 grid grid-cols-1 gap-6 text-white sm:grid-cols-2 xl:grid-cols-4 mt-6">
             <div className="panel bg-gradient-to-r from-cyan-500 to-cyan-400">
               <div className="flex justify-between">
                 <div className="text-md font-semibold ltr:mr-1 rtl:ml-1">Total Verifications</div>
@@ -171,18 +189,18 @@ const ComponentsDatatablesAdvanced = () => {
               </div>
               <div className="mt-5 flex items-center">
                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3">{stats?.total_verifications_count} </div>
-                <div className="badge bg-white/30">+ 2.35% </div>
+                <div className="badge bg-white/30">{stats?.total_change_per_month}%</div>
               </div>
               <div className="mt-5 flex items-center font-semibold">
                 <IconEye className="shrink-0 ltr:mr-2 rtl:ml-2" />
-                Last Week: {stats?.total_verifications_count_week}
+                This Week: {stats?.total_verifications_count_week}
               </div>
             </div>
 
             {/* Sessions */}
             <div className="panel bg-gradient-to-r from-violet-500 to-violet-400">
               <div className="flex justify-between">
-                <div className="text-md font-semibold ltr:mr-1 rtl:ml-1">Successful Matches</div>
+                <div className="text-md font-semibold ltr:mr-1 rtl:ml-1">Verifications Match</div>
                 <div className="dropdown">
                   <Dropdown
                     offset={[0, 5]}
@@ -200,18 +218,18 @@ const ComponentsDatatablesAdvanced = () => {
               </div>
               <div className="mt-5 flex items-center">
                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> {stats?.matched_count} </div>
-                <div className="badge bg-white/30">- 2.35% </div>
+                <div className="badge bg-white/30">{stats?.matched_change_per_month}% </div>
               </div>
               <div className="mt-5 flex items-center font-semibold">
                 <IconEye className="shrink-0 ltr:mr-2 rtl:ml-2" />
-                Last Week: {stats?.matched_week_count}
+                This Week: {stats?.matched_week_count}
               </div>
             </div>
 
             {/*  Time On-Site */}
             <div className="panel bg-gradient-to-r from-blue-500 to-blue-400">
               <div className="flex justify-between">
-                <div className="text-md font-semibold ltr:mr-1 rtl:ml-1">Failed Verifications</div>
+                <div className="text-md font-semibold ltr:mr-1 rtl:ml-1">Verifications Mismatch</div>
                 <div className="dropdown">
                   <Dropdown
                     offset={[0, 5]}
@@ -230,11 +248,11 @@ const ComponentsDatatablesAdvanced = () => {
               </div>
               <div className="mt-5 flex items-center">
                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> {stats?.mismatched_count} </div>
-                <div className="badge bg-white/30">+ 1.35% </div>
+                <div className="badge bg-white/30">{stats?.mismatched_change_per_month}% </div>
               </div>
               <div className="mt-5 flex items-center font-semibold">
                 <IconEye className="shrink-0 ltr:mr-2 rtl:ml-2" />
-                Last Week: {stats?.mismatched_week_count}
+                This Week: {stats?.mismatched_week_count}
               </div>
             </div>
 
@@ -260,11 +278,11 @@ const ComponentsDatatablesAdvanced = () => {
               </div>
               <div className="mt-5 flex items-center">
                 <div className="text-3xl font-bold ltr:mr-3 rtl:ml-3"> {stats?.pending_count} </div>
-                <div className="badge bg-white/30">- 0.35% </div>
+                <div className="badge bg-white/30">{stats?.pending_change_per_month}% </div>
               </div>
               <div className="mt-5 flex items-center font-semibold">
                 <IconEye className="shrink-0 ltr:mr-2 rtl:ml-2" />
-                Last Week: {stats?.pending_week_count}
+                This Week: {stats?.pending_week_count}
               </div>
             </div>
           </div><div className="panel mt-6">
@@ -298,80 +316,95 @@ const ComponentsDatatablesAdvanced = () => {
                 </div>
               </div>
               <div className="datatables">
-                {isMounted && (
-                  <DataTable
-                    noRecordsText="No results match your search query"
-                    highlightOnHover
-                    className="table-hover whitespace-nowrap"
-                    records={recordsData}
-                    columns={[
-                      {
-                        accessor: 'reference',
-                        title: 'Verification ID',
-                        sortable: true,
-                        render: ({ reference }) => (
-                          <div className="flex items-center gap-2">
-                            <div className="font-semibold">{reference}</div>
-                          </div>
-                        ),
-                      },
-                      {
-                        accessor: 'initiator',
-                        title: 'Initiator',
-                        sortable: true,
-                        render: ({ firstname, lastname }) => (
-                          <div className="flex items-center gap-2">
-                            <div className="font-semibold">{firstname + ' ' + lastname}</div>
-                          </div>
-                        ),
-                      },
-                      {
-                        accessor: 'created_at',
-                        title: 'Verification Date',
-                        sortable: true,
-                        render: ({ created_at }) => <div>{formatDate(created_at)}</div>,
-                      },
-                      {
-                        accessor: 'email',
-                        title: 'Email',
-                        sortable: true,
-                        render: ({ email }) => <div>{email}</div>,
-                      },
-                      { accessor: 'phone', title: 'Phone', sortable: true },
-                      {
-                        accessor: 'verification_status',
-                        title: 'Status',
-                        sortable: true,
-                        render: ({ verification_status }) => {
-                          let colorClass;
-                          switch (verification_status) {
-                            case 'MATCH':
-                              colorClass = colors.success;
-                              break;
-                            case 'PENDING':
-                              colorClass = colors.warning;
-                              break;
-                            case 'MISMATCH':
-                              colorClass = colors.danger;
-                              break;
-                            default:
-                              colorClass = colors.secondary;
-                              break;
-                          }
-                          return <span className={`badge btn-${colorClass}`}>{verification_status}</span>;
-                        },
-                      },
-                    ]}
-                    totalRecords={initialRecords.length}
-                    recordsPerPage={pageSize}
-                    page={page}
-                    onPageChange={(p) => setPage(p)}
-                    recordsPerPageOptions={PAGE_SIZES}
-                    onRecordsPerPageChange={setPageSize}
-                    sortStatus={sortStatus}
-                    onSortStatusChange={setSortStatus}
-                    onRowClick={({ reference }) => handleRowClick(reference)} />
-                )}
+      {isMounted && (
+        <>
+          {tableLoading ? ( // Show loader only for the table
+            <div className="loader">Loading...</div>
+          ) : (
+            <DataTable
+              noRecordsText="No results match your search query"
+              highlightOnHover
+              className="table-hover whitespace-nowrap"
+              records={recordsData}
+              columns={[
+                {
+                  accessor: 'reference',
+                  title: 'Verification ID',
+                  sortable: true,
+                  render: ({ reference }) => (
+                    <div className="flex items-center gap-2">
+                      <div className="font-semibold">{reference}</div>
+                    </div>
+                  ),
+                },
+                {
+                  accessor: 'fullname',
+                  title: 'Fullname',
+                  sortable: true,
+                  render: ({ fullname }) => (
+                    <div className="flex items-center gap-2">
+                      <div className="font-semibold">{fullname}</div>
+                    </div>
+                  ),
+                },
+                {
+                  accessor: 'created_at',
+                  title: 'Verification Date',
+                  sortable: true,
+                  render: ({ created_at }) => <div>{formatDate(created_at)}</div>,
+                },
+                {
+                  accessor: 'email',
+                  title: 'Email',
+                  sortable: true,
+                  render: ({ email }) => <div>{email}</div>,
+                },
+                { accessor: 'phone', title: 'Phone', sortable: true },
+                {
+                  accessor: 'verification_status',
+                  title: 'Status',
+                  sortable: true,
+                  render: ({ verification_status }) => {
+                    let colorClass;
+                    switch (verification_status) {
+                      case 'MATCH':
+                        colorClass = colors.success;
+                        break;
+                      case 'PENDING':
+                        colorClass = colors.warning;
+                        break;
+                      case 'MISMATCH':
+                        colorClass = colors.danger;
+                        break;
+                      default:
+                        colorClass = colors.secondary;
+                        break;
+                    }
+                    return <span className={`badge btn-${colorClass}`}>{verification_status}</span>;
+                  },
+                },
+              ]}
+              onRowClick={({ reference }) => handleRowClick(reference)}
+            />
+          )}
+        </>
+      )}
+    </div>
+              <div className="div flex gap-2 flex-right mt-5">
+                <button 
+                    className="btn shadow-lg text-primary" 
+                    onClick={handlePrevious} 
+                    disabled={currentPage === 1} // Disable if on the first page
+                >
+                    Previous
+                </button>
+                <button 
+                    className="btn btn-primary" 
+                    onClick={handleNext} 
+                    disabled={currentPage === totalPages} // Disable if on the last page
+                >
+                    Next
+                </button>
               </div>
             </div></>
       }
@@ -380,3 +413,4 @@ const ComponentsDatatablesAdvanced = () => {
 };
 
 export default ComponentsDatatablesAdvanced;
+

@@ -118,7 +118,7 @@ useEffect(() => {
     data.append("documentname",verificationData.documentname);
     data.append("countryname",verificationData.countryname);
     if (imageSrc) {
-      data.append("selfie", imageSrc);
+      data.append("video_image", imageSrc);
     }
     if (image2) {
       data.append("ghana_card_front", image2);
@@ -165,20 +165,14 @@ useEffect(() => {
                   <ol className="list-decimal ml-6 mt-2">
                     <li>Remove all accessories such as eye glasses and hats</li>
                     <li>Ensure your face is visible and clear</li>
-                    <li>Turn on your device&apos;s location</li>
                   </ol>
                 </div>
 
 
-                <p className="text-justify mx-auto max-w-4xl px-4 text-sm">
-                  By submitting your photo, you agree to a verification of your identity
-                  by the company. This is in compliance with the company&apos;s mandate to verify
-                  users before rendering certain services.
-                </p>
                 <div className="selfie-capture">
                   {/* <div className=" py-5">
                     <h2>Capture Your Selfie</h2>
-                  </div> */}
+                    </div> */}
                   {!imageSrc ? (
                     <div className=" grid place-items-center">
                       <Webcam
@@ -200,6 +194,11 @@ useEffect(() => {
                     </div>
                   )}
                 </div>
+                <p className="text-justify mx-auto max-w-4xl px-4 text-sm">
+                  By submitting your photo, you agree to a verification of your identity
+                  by the company. This is in compliance with the company&apos;s mandate to verify
+                  users before rendering certain services.
+                </p>
                 <div>
                   <div className="mt-5">
                     <label htmlFor="gridCity">Select Country <span className=" text-red-600">*</span></label>

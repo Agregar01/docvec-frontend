@@ -8,8 +8,8 @@ import {NextUIProvider} from "@nextui-org/react";
 
 export const metadata: Metadata = {
     title: {
-        template: '%s | VRISTO - Multipurpose Tailwind Dashboard Template',
-        default: 'VRISTO - Multipurpose Tailwind Dashboard Template',
+        template: '%s | DocVec - AgregarTech',
+        default: 'DocVec - AgregarTech',
     },
 };
 const nunito = Nunito({
