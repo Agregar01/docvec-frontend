@@ -68,13 +68,13 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                     data.append("id", verificationData?.id || '');
 
                     if (verificationData?.imageSrc) {
-                        data.append("video_image", blob); // Append image file
+                        data.append("video_image", blob, `${crypto.randomUUID()}.jpg`); // Append image file
                     }
                     if (verificationData?.image2) {
-                        data.append("id_card_front", verificationData?.image2); // Append image file
+                        data.append("id_card_front", verificationData?.image2, `${crypto.randomUUID()}.jpg`); // Append image file
                     }
                     if (verificationData?.image3) {
-                        data.append("id_card_back", verificationData?.image3); // Append image file
+                        data.append("id_card_back", verificationData?.image3, `${crypto.randomUUID()}.jpg`); // Append image file
                     }
 
 
