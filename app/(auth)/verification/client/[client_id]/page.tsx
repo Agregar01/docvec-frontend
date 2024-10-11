@@ -121,11 +121,11 @@ useEffect(() => {
       data.append("video_image", imageSrc);
     }
     if (image2) {
-      data.append("ghana_card_front", image2);
+      data.append("id_card_front", image2);
     }
 
     if (image3) {
-      data.append("ghana_card_back", image3);
+      data.append("id_card_back", image3);
     }
 
     setFormData(data);

@@ -23,8 +23,8 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                 document_type: formData.get("document_type"),
                 id_number: formData.get("id_number"),
                 imageSrc: formData.get("video_image"),
-                image2: formData.get("ghana_card_front"),
-                image3: formData.get("ghana_card_back"),
+                image2: formData.get("id_card_front"),
+                image3: formData.get("id_card_back"),
                 id: formData.get("id"),
                 countryname: formData.get("countryname"),
                 documentname: formData.get("documentname")
@@ -71,10 +71,10 @@ export default function VerificationModal3({ isOpen, closeModal, formData }: Ver
                         data.append("video_image", blob); // Append image file
                     }
                     if (verificationData?.image2) {
-                        data.append("ghana_card_front", verificationData?.image2); // Append image file
+                        data.append("id_card_front", verificationData?.image2); // Append image file
                     }
                     if (verificationData?.image3) {
-                        data.append("ghana_card_back", verificationData?.image3); // Append image file
+                        data.append("id_card_back", verificationData?.image3); // Append image file
                     }
 
 
